@@ -1,0 +1,15 @@
+# Git Commit Template with Co-Authors
+#
+# To use this template:
+# git config commit.template .gitmessage
+#
+# Example commit with co-authors:
+# feat: Add MongoDB natural language query support
+#
+# This commit adds the ability to query MongoDB using natural language.
+# The agent uses LangGraph and supports multiple LLM providers.
+#
+# Co-authored-by: Name <email@example.com>
+# Co-authored-by: Name <email@example.com>
+
+

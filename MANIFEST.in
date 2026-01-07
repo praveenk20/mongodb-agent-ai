@@ -1,0 +1,12 @@
+include README.md
+include LICENSE
+include QUICK_START.md
+include setup.sh
+include start_custom_server.sh
+recursive-include docs *.md *.html
+recursive-include examples *.py
+recursive-include semantic_models *.yaml
+exclude .env
+exclude .env.local
+exclude *.log
+exclude setup.py.bak

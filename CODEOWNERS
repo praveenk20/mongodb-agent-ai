@@ -1,0 +1,18 @@
+# CODEOWNERS
+# These owners will be the default owners for everything in the repo
+# They will be requested for review when someone opens a pull request
+
+* @cisco-it-supply-chain
+
+# Documentation files
+*.md @cisco-it-supply-chain
+/docs/ @cisco-it-supply-chain
+
+# Configuration files
+*.yaml @cisco-it-supply-chain
+*.yml @cisco-it-supply-chain
+.env.template @cisco-it-supply-chain
+
+# Python package files
+setup.py @cisco-it-supply-chain
+requirements.txt @cisco-it-supply-chain

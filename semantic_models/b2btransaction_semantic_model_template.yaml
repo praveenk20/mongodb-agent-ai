@@ -1,0 +1,249 @@
+# ===========================================
+# MONGODB SEMANTIC MODEL - B2B TRANSACTIONS
+# ===========================================
+
+collection_info:
+  database: "eemdb_ts1"
+  schema_name: "appuser"
+  business_flow: "B2B transactions"
+  application_domain: "Internal & External Service"
+
+description: "Semantic Model for B2B Transactions - ingestion, tracking, and analytics across internal/external services"
+
+business_rules:
+  core_collections:
+    primary:
+      - name: "b2btransaction"
+        role: "primary_entity"
+        mandatory: true
+        priority: "critical"
+        description: "Primary B2B transaction collection"
+        business_importance: "critical"
+        query_frequency: "very_high"
+
+  field_priorities:
+    b2btransaction_search:
+      essential_fields:
+        - "_id"
+        - "documentFormat"
+        - "transactionDirection"
+        - "locationCode"
+        - "messageProtocol"
+        - "processType"
+        - "processVersion"
+        - "partnerName"
+        - "errorType"
+        - "transactionState"
+        - "transactionSubType"
+      high_priority_fields:
+        - "creationDate"
+        - "lastUpdateDate"
+        - "tpReferenceNumber"
+        - "auditReferenceID"
+        - "orderNumber"
+        - "deliveryId"
+        - "ciscoReferenceId"
+    default:
+      essential_fields:
+        - "_id"
+        - "transactionState"
+        - "partnerName"
+      high_priority_fields:
+        - "creationDate"
+        - "lastUpdateDate"
+        - "orderNumber"
+
+  query_type_rules:
+    b2btransaction_search:
+      max_collections: 1
+      max_fields: 25
+      essential_collections: ["b2btransaction"]
+      relevance_threshold: 0.8
+
+# Legacy query-relevance field filtering configuration (preserved for compatibility)
+query_relevance_rules:
+  always_include:
+    - "tpReferenceNumber"
+    - "auditReferenceID"
+    - "orderNumber"
+    - "partnerName"
+    - "deliveryId"
+
+collections:
+  b2btransaction:
+    name: b2btransaction
+    description: "B2B transaction messages and state tracking"
+    fields:
+      _id:
+        data_type: "ObjectId"
+        description: "Unique MongoDB document identifier (primary key)"
+        sample_values: ["64b5f2a3c4d1e2f3a4b5c6d7"]
+        unique: true
+        nested_path: "_id"
+
+      documentFormat:
+        data_type: "string"
+        description: "Message/document format (e.g., JSON, XML, EDI)"
+        sample_values: ["JSON", "XML", "EDI"]
+        unique: false
+        nested_path: "documentFormat"
+
+      transactionDirection:
+        data_type: "string"
+        description: "Inbound or Outbound"
+        sample_values: ["INBOUND", "OUTBOUND"]
+        unique: false
+        nested_path: "transactionDirection"
+
+      locationCode:
+        data_type: "string"
+        description: "Site/location code for processing"
+        sample_values: ["U98", "HK4", "NL6"]
+        unique: false
+        nested_path: "locationCode"
+
+      messageProtocol:
+        data_type: "string"
+        description: "Protocol used for message exchange"
+        sample_values: ["XML", "SFTP", "KAFKA"]
+        unique: false
+        nested_path: "messageProtocol"
+
+      processType:
+        data_type: "string"
+        description: "Type of process (e.g., 3B3, 3B12, 4B2)"
+        sample_values: ["3B3", "3B12", "4B2"]
+        unique: false
+        nested_path: "processType"
+
+      processVersion:
+        data_type: "string"
+        description: "Process/version identifier"
+        sample_values: ["v1", "v2"]
+        unique: false
+        nested_path: "processVersion"
+
+      partnerName:
+        data_type: "string"
+        description: "Trading partner or vendor name"
+        sample_values: ["DHLUS", "DBSRM"]
+        unique: false
+        nested_path: "partnerName"
+
+      errorType:
+        data_type: "string"
+        description: "Error type classification if any"
+        sample_values: ["C3-FUNCTIONAL", "MULESOFT", "E2OPEN"]
+        unique: false
+        nested_path: "errorType"
+
+      transactionState:
+        data_type: "string"
+        description: "Current state of transaction"
+        sample_values: ["ONHOLD", "PROCESSING", "SUCCESS", "ERROR"]
+        unique: false
+        nested_path: "transactionState"
+
+      transactionSubType:
+        data_type: "string"
+        description: "Sub-type of transaction"
+        sample_values: ["SSG", "REC-DGI", "DGI"]
+        unique: false
+        nested_path: "transactionSubType"
+
+      creationDate:
+        data_type: "datetime"
+        description: "Date/time when the transaction was created"
+        sample_values: ["2025-01-15T10:30:00Z"]
+        unique: false
+        nested_path: "creationDate"
+
+      lastUpdateDate:
+        data_type: "datetime"
+        description: "Last updated timestamp"
+        sample_values: ["2025-01-16T11:00:00Z"]
+        unique: false
+        nested_path: "lastUpdateDate"
+
+      tpReferenceNumber:
+        data_type: "string"
+        description: "Trading partner reference number"
+        sample_values: ["800297903", "800298300"]
+        unique: false
+        nested_path: "tpReferenceNumber"
+
+      auditReferenceID:
+        data_type: "string"
+        description: "Audit reference identifier"
+        sample_values: ["AUD-555-XYZ"]
+        unique: false
+        nested_path: "auditReferenceID"
+
+      orderNumber:
+        data_type: "array"
+        description: "Order number(s) related to the transaction (array of strings)"
+        sample_values: [["800297903"], ["800297903", "800298001"]]
+        unique: false
+        nested_path: "orderNumber"
+
+      deliveryId:
+        data_type: "string"
+        description: "Delivery identifier related to the transaction"
+        sample_values: ["162167843", "111125802"]
+        unique: false
+        nested_path: "deliveryId"
+
+      ciscoReferenceId:
+        data_type: "string"
+        description: "Cisco-specific reference id"
+        sample_values: ["CISCO-REF-001"]
+        unique: false
+        nested_path: "ciscoReferenceId"
+
+sample_queries:
+  - description: "Find transactions by location and partner"
+    query: 'db.b2btransaction.find({"transactionState": "ERROR", "partnerName": "DHLUS"})'
+
+  - description: "Recent transactions (last 7 days)"
+    query: 'db.b2btransaction.find({"creationDate": {"$gte": ISODate("2025-11-25")}})'
+
+  - description: "Outbound EDI messages"
+    query: 'db.b2btransaction.find({"transactionDirection": "OUTBOUND", "documentFormat": "XML"})'
+
+verified_queries:
+  - name: "FailedTransactionsByProtocol"
+    question: "Count failed transactions grouped by message protocol"
+    mongodb_query: 'db.b2btransaction.aggregate([{"$match": {"transactionState": "ERROR"}}, {"$group": {"_id": "$messageProtocol", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}])'
+
+  - name: "RecentActivityByPartner"
+    question: "Recent transactions for a specific partner in last 30 days"
+    mongodb_query: 'db.b2btransaction.aggregate([{"$match": {"partnerName": "DHLUS", "creationDate": {"$gte": ISODate("2025-11-02")}}}, {"$group": {"_id": "$transactionState", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}])'
+
+  - name: "PartnerTransactionsBySubTypeAndState"
+    question: "Recent transactions for partnerName : 'DBS', transactionSubType 'REC-DGI' last 3 days?"
+    mongodb_query: 'db.b2btransaction.aggregate([{"$match": {"partnerName": {"$regex": "DBS", "$options": "i"}, "transactionSubType": "REC-DGI", "creationDate": {"$gte": ISODate("2025-12-07")}}}, {"$group": {"_id": {"transactionState": "$transactionState", "partnerName": "$partnerName", "transactionSubType": "$transactionSubType"}, "count": {"$sum": 1}}}, {"$project": {"_id": 0, "partnerName": "$_id.partnerName", "transactionSubType": "$_id.transactionSubType", "transactionState": "$_id.transactionState", "count": 1}}, {"$sort": {"count": -1}}, {"$limit": 100}])'
+custom_instructions: |
+  MongoDB Guidelines for B2B Transactions:
+  - Treat identifier fields (tpReferenceNumber, auditReferenceID, orderNumber, deliveryId) as strings unless stored otherwise
+  - Place $match early in aggregation pipelines for performance
+  - Use case-insensitive $regex for partnerName when matching free-text
+  - Prefer creationDate for ingestion analysis and lastUpdateDate for operational freshness
+
+relationships:
+  # Single collection model for now
+  - "b2btransaction._id -> (self) (primary key)"
+
+metadata:
+  generated_at: "2025-12-02T00:00:00Z"
+  total_collections: 1
+  database: "eemdb_ts1"
+  schema_name: "appuser"
+  has_relationships: false
+  relationship_types: []
+
+# ===========================================
+# USAGE NOTES
+# - Replace sample_values and dates with your actual data
+# - Expand fields with nested_path updates if the source documents are nested
+# - Add more verified_queries after testing against your MongoDB
+# ===========================================
