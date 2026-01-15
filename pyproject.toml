@@ -50,10 +50,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general"
-Documentation = "https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general/tree/main/docs"
-Repository = "https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general"
-"Bug Tracker" = "https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general/issues"
+Homepage = "https://github.com/praveenk20/mongodb-agent-ai"
+Documentation = "https://github.com/praveenk20/mongodb-agent-ai/tree/main/docs"
+Repository = "https://github.com/praveenk20/mongodb-agent-ai"
+"Bug Tracker" = "https://github.com/praveenk20/mongodb-agent-ai/issues"
 
 [project.scripts]
 mongodb-agent = "mongodb_agent.cli:main"

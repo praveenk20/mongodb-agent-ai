@@ -178,7 +178,7 @@
         <p>Use the interactive setup script for guided installation:</p>
 
         <pre><code># Navigate to distribution directory
-cd mongodb_agent_distribution_general
+cd mongodb-agent-ai
 
 # Run setup script
 chmod +x setup.sh
@@ -215,7 +215,7 @@ venv\Scripts\activate</code></pre>
 
         <h3>Step 2: Install Wheel Package</h3>
         <pre><code># Navigate to distribution directory
-cd mongodb_agent_distribution_general
+cd mongodb-agent-ai
 
 # Install the wheel
 pip3 install mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
@@ -235,7 +235,7 @@ pip3 list | grep mongodb-agent-ai
         <p>If you need to reinstall or upgrade the package:</p>
 
         <h3>Using Reinstall Script:</h3>
-        <pre><code>cd mongodb_agent_distribution_general
+        <pre><code>cd mongodb-agent-ai
 chmod +x reinstall.sh
 ./reinstall.sh</code></pre>
 
@@ -302,12 +302,12 @@ pip3 install mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
         <h3>Issue: Wheel file not found</h3>
         <p><strong>Solution:</strong></p>
         <pre><code># Verify wheel file exists
-ls -lh mongodb_agent_distribution_general/*.whl
+ls -lh mongodb-agent-ai/*.whl
 
 # Expected: mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
 
         <h2>📁 Installation Directory Structure</h2>
-        <pre><code>mongodb_agent_distribution_general/
+        <pre><code>mongodb-agent-ai/
 ├── mongodb_agent_ai-1.0.0-py3-none-any.whl  # Package
 ├── setup.sh                                  # Setup script
 ├── reinstall.sh                              # Reinstall script

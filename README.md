@@ -11,7 +11,7 @@ A powerful AI-powered agent for querying MongoDB databases using natural languag
 ## 📦 What's Inside?
 
 ```
-mongodb_agent_distribution_general/
+mongodb-agent-ai/
 ├── README.md                          # This file
 ├── LICENSE                            # MIT License
 ├── QUICK_START.md                     # 5-minute setup guide  

@@ -289,7 +289,7 @@
             <pre><code>POST /api/mongodb
 {
   "question": "How many orders were completed last month?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }</code></pre>
         </div>
 
@@ -494,7 +494,7 @@ Your response:</code></pre>
         <p>LangGraph maintains state across nodes:</p>
         <pre><code>class AgentState(TypedDict):
     question: str              # User's natural language question
-    collection_name: str       # Target MongoDB collection
+    yaml_file_name: str        # Semantic model YAML file
     semantic_model: dict       # Collection schema (optional)
     query_generated: list      # Generated MongoDB pipeline
     query_result: list         # Execution results

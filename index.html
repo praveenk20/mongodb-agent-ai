@@ -336,17 +336,17 @@
         <div class="nav-section">
             <h4>Main Sections</h4>
             <ul class="nav-links">
-                <li><a href="#overview" class="active">1. Overview</a></li>
-                <li><a href="#target-audience">2. Target Audience</a></li>
-                <li><a href="#installation">3. Installation</a></li>
-                <li class="sub-item"><a href="#prerequisites">3.1 Prerequisites</a></li>
-                <li class="sub-item"><a href="#quick-setup">3.2 Quick Setup</a></li>
-                <li class="sub-item"><a href="#platform-support">3.3 Platform Support</a></li>
-                <li class="sub-item"><a href="#available-features">3.4 Available Features</a></li>
-                <li class="sub-item"><a href="#troubleshooting">3.5 Troubleshooting</a></li>
-                <li class="sub-item"><a href="#faq">3.6 FAQ</a></li>
-                <li><a href="#use-cases">4. Sample Use Cases</a></li>
-                <li><a href="#resources">5. Additional Resources</a></li>
+                <li><a href="#overview" onclick="scrollToSection('overview'); return false;" class="active">1. Overview</a></li>
+                <li><a href="#target-audience" onclick="scrollToSection('target-audience'); return false;">2. Target Audience</a></li>
+                <li><a href="#installation" onclick="scrollToSection('installation'); return false;">3. Installation</a></li>
+                <li class="sub-item"><a href="#prerequisites" onclick="scrollToSection('prerequisites'); return false;">3.1 Prerequisites</a></li>
+                <li class="sub-item"><a href="#quick-setup" onclick="scrollToSection('quick-setup'); return false;">3.2 Quick Setup</a></li>
+                <li class="sub-item"><a href="#platform-support" onclick="scrollToSection('platform-support'); return false;">3.3 Platform Support</a></li>
+                <li class="sub-item"><a href="#available-features" onclick="scrollToSection('available-features'); return false;">3.4 Available Features</a></li>
+                <li class="sub-item"><a href="#troubleshooting" onclick="scrollToSection('troubleshooting'); return false;">3.5 Troubleshooting</a></li>
+                <li class="sub-item"><a href="#faq" onclick="scrollToSection('faq'); return false;">3.6 FAQ</a></li>
+                <li><a href="#use-cases" onclick="scrollToSection('use-cases'); return false;">4. Sample Use Cases</a></li>
+                <li><a href="#resources" onclick="scrollToSection('resources'); return false;">5. Additional Resources</a></li>
             </ul>
         </div>
 
@@ -524,7 +524,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "What were the top 5 products by revenue in Q4 2024?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }
 
 → Returns: Sorted list with product names and revenue totals</code></pre>
@@ -534,7 +534,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "Show me failed transactions from the last 24 hours",
-  "collection_name": "transactions"
+  "yaml_file_name": "transactions_semantic_model.yaml"
 }
 
 → Returns: Filtered list with error details and timestamps</code></pre>
@@ -544,7 +544,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "Which customers placed more than 10 orders this month?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }
 
 → Returns: Grouped results with customer IDs and order counts</code></pre>
@@ -655,7 +655,15 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
 
         // Add a function to reload the original content
         function loadHome() {
-            location.reload();
+            window.location.href = 'index.html';
+        }
+        
+        // Smooth scroll to anchor sections
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
         }
 
         // Intercept links on initial page load

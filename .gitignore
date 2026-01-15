@@ -43,3 +43,4 @@ ENV/
 *.bak
 *.swp
 architecture copy.html
+.pypirc

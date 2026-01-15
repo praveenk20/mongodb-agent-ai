@@ -312,7 +312,7 @@ ERROR: Required environment variables missing</code></pre>
                         <pre><code>cp .env.template .env</code></pre>
                     </li>
                     <li>Ensure you're running server from correct directory:
-                        <pre><code>cd /path/to/mongodb_agent_distribution_general
+                        <pre><code>cd /path/to/mongodb-agent-ai
 python3 -m mongodb_agent.api</code></pre>
                     </li>
                 </ol>
@@ -354,7 +354,7 @@ python3 -m mongodb_agent.api</code></pre>
                         <pre><code>mongosh "your-connection-string" \
   --eval "db.getCollectionNames()"</code></pre>
                     </li>
-                    <li>Verify <code>collection_name</code> parameter in API request</li>
+                    <li>Verify <code>yaml_file_name</code> parameter in API request</li>
                     <li>Check case sensitivity (MongoDB collections are case-sensitive)</li>
                     <li>Ensure user has read permissions on collection</li>
                 </ol>

@@ -258,7 +258,7 @@ Content-Type: application/json
 
 {
   "question": "How many orders were completed last month?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }</code></pre>
 
             <h4>Success Response <span class="badge">200 OK</span></h4>
@@ -318,7 +318,7 @@ Content-Type: application/json
   -H "Content-Type: application/json" \
   -d '{
     "question": "Show me top 10 customers by revenue",
-    "collection_name": "orders"
+    "yaml_file_name": "orders_semantic_model.yaml"
   }'</code></pre>
 
             <h4>Python Example</h4>
@@ -328,7 +328,7 @@ response = requests.post(
     "http://localhost:8000/api/mongodb",
     json={
         "question": "How many orders are pending?",
-        "collection_name": "orders"
+        "yaml_file_name": "orders_semantic_model.yaml"
     }
 )
 
@@ -342,7 +342,7 @@ print(f"Query: {data['query_generated']}")</code></pre>
   headers: {'Content-Type': 'application/json'},
   body: JSON.stringify({
     question: 'What is the average order value?',
-    collection_name: 'orders'
+    yaml_file_name: 'orders_semantic_model.yaml'
   })
 });
 
@@ -492,7 +492,7 @@ console.log('Results:', data.query_result);</code></pre>
             <p><strong>Request:</strong></p>
             <pre><code>{
   "question": "How many users are active?",
-  "collection_name": "users"
+  "yaml_file_name": "users_semantic_model.yaml"
 }</code></pre>
             <p><strong>Response:</strong></p>
             <pre><code>{
@@ -510,7 +510,7 @@ console.log('Results:', data.query_result);</code></pre>
             <p><strong>Request:</strong></p>
             <pre><code>{
   "question": "What's the total revenue by product category?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }</code></pre>
             <p><strong>Response:</strong></p>
             <pre><code>{
@@ -545,7 +545,7 @@ console.log('Results:', data.query_result);</code></pre>
             <p><strong>Request:</strong></p>
             <pre><code>{
   "question": "Show me data",
-  "collection_name": "nonexistent_collection"
+  "yaml_file_name": "nonexistent_collection.yaml"
 }</code></pre>
             <p><strong>Response (404):</strong></p>
             <pre><code>{
@@ -564,7 +564,7 @@ console.log('Results:', data.query_result);</code></pre>
             <li>Add request body:
                 <pre><code>{
   "question": "Your question here",
-  "collection_name": "your_collection"
+  "yaml_file_name": "your_semantic_model.yaml"
 }</code></pre>
             </li>
             <li>Send request and view response</li>
@@ -573,7 +573,7 @@ console.log('Results:', data.query_result);</code></pre>
         <h3>Using HTTPie</h3>
         <pre><code>http POST localhost:8000/api/mongodb \
   question="How many orders?" \
-  collection_name="orders"</code></pre>
+  yaml_file_name="orders_semantic_model.yaml"</code></pre>
 
         <h3>Using Python Requests</h3>
         <pre><code>import requests
@@ -582,7 +582,7 @@ response = requests.post(
     "http://localhost:8000/api/mongodb",
     json={
         "question": "Show me pending tasks",
-        "collection_name": "tasks"
+        "yaml_file_name": "tasks_semantic_model.yaml"
     }
 )
 

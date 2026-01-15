@@ -430,9 +430,9 @@ semantic_models/
         <pre><code>POST /api/mongodb
 {
   "question": "Show me pending orders",
-  "collection_name": "orders",
+  "yaml_file_name": "orders_semantic_model.yaml",
   "semantic_model": {
-    "collection_name": "orders",
+    "yaml_file_name": "orders_semantic_model.yaml",
     "fields": [
       {"name": "status", "type": "string", "enum": ["pending", "completed"]},
       {"name": "created_date", "type": "date"}
@@ -515,7 +515,7 @@ curl -X POST http://localhost:8000/api/mongodb \
   -H "Content-Type: application/json" \
   -d '{
     "question": "Show me high priority orders from last week",
-    "collection_name": "orders"
+    "yaml_file_name": "orders_semantic_model.yaml"
   }'
 
 # Check logs to see generated query

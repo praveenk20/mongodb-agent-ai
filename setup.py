@@ -20,11 +20,11 @@ setup(
     description='AI-powered agent for querying MongoDB databases using natural language',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general',
+    url='https://github.com/praveenk20/mongodb-agent-ai',
     project_urls={
-        'Bug Tracker': 'https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general/issues',
-        'Documentation': 'https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general/tree/main/docs',
-        'Source Code': 'https://github.com/cisco-it-supply-chain/mongodb_agent_distribution_general',
+        'Bug Tracker': 'https://github.com/praveenk20/mongodb-agent-ai/issues',
+        'Documentation': 'https://github.com/praveenk20/mongodb-agent-ai/tree/main/docs',
+        'Source Code': 'https://github.com/praveenk20/mongodb-agent-ai',
     },
     packages=find_packages(exclude=['tests', 'examples', 'docs']),
     classifiers=[

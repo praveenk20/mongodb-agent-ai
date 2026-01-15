@@ -525,7 +525,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "What were the top 5 products by revenue in Q4 2024?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }
 
 → Returns: Sorted list with product names and revenue totals</code></pre>
@@ -535,7 +535,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "Show me failed transactions from the last 24 hours",
-  "collection_name": "transactions"
+  "yaml_file_name": "transactions_semantic_model.yaml"
 }
 
 → Returns: Filtered list with error details and timestamps</code></pre>
@@ -545,7 +545,7 @@ pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></p
         <pre><code>POST /api/mongodb
 {
   "question": "Which customers placed more than 10 orders this month?",
-  "collection_name": "orders"
+  "yaml_file_name": "orders_semantic_model.yaml"
 }
 
 → Returns: Grouped results with customer IDs and order counts</code></pre>
