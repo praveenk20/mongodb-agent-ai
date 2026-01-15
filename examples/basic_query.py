@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Cisco Systems, Inc. and its affiliates
+
 """
 MongoDB Agent - Basic Query Example
 ===================================

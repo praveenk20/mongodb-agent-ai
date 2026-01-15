@@ -63,11 +63,12 @@ python3 -m mongodb_agent.cli server --port 8000 --mode rest
 
 - 🤖 **Natural Language Queries** - Ask questions in plain English
 - 🔌 **Multiple LLM Providers** - OpenAI, Azure OpenAI, Anthropic Claude
-- 📊 **Semantic Models** - Define your MongoDB schema in YAML
+- 📊 **Semantic Models** - Define your MongoDB schema in YAML (local files or Weaviate)
 - 🚀 **Model Context Protocol (MCP)** - Integrate with Claude Desktop
 - 🌐 **REST API** - HTTP endpoints for easy integration
 - 💾 **Token Caching** - Efficient OAuth token management
 - 🎨 **Flexible Configuration** - Environment variables or config files
+- 🔀 **Dual MongoDB Modes** - Direct PyMongo or MCP Protocol
 
 ---
 
@@ -247,31 +248,80 @@ Built with:
 
 ## 📊 Architecture
 
+```mermaid
+flowchart TB
+    User["👤 User Query<br/>(Natural Language)"]
+    
+    subgraph Agent["🤖 MongoDB Agent (LangGraph State Machine)"]
+        Ingress["🚪 Ingress<br/>(Initialize State)"]
+        Selector["📋 Selector<br/>(Load Schema + Generate Query)"]
+        Executor["▶️ Query Executor<br/>(Execute MongoDB Query)"]
+        Router{"🔀 Router<br/>(Check Result)"}
+        Refiner["🔧 Query Refiner<br/>(Fix Query via LLM)"]
+        Parser["📝 Output Parser<br/>(Format to Natural Language)"]
+    end
+    
+    subgraph SemanticSource["📚 Semantic Model Source"]
+        LocalYAML["📄 Local YAML Files<br/>(Default)"]
+        Weaviate["🔍 Weaviate Vector DB<br/>(Optional)"]
+    end
+    
+    subgraph LLM["🧠 LLM Provider"]
+        OpenAI["OpenAI"]
+        AzureOpenAI["Azure OpenAI"]
+        Claude["Anthropic Claude"]
+    end
+    
+    subgraph MongoRouter["🔄 MongoDB Connection"]
+        MCPClient["🔐 MCP Client<br/>(OAuth2)"]
+        DirectClient["🔗 Direct Client<br/>(PyMongo)"]
+    end
+    
+    MongoDB[("🍃 MongoDB<br/>Database")]
+    Result["✅ Final Result<br/>(Natural Language)"]
+    
+    User --> Ingress
+    Ingress --> Selector
+    Selector --> Executor
+    Executor --> Router
+    Router -->|"✅ Success"| Parser
+    Router -->|"❌ Error"| Refiner
+    Router -->|"💀 Fatal Error"| Result
+    Refiner --> Executor
+    Parser --> Result
+    
+    Selector -.->|"1. Load Schema<br/>2. Generate Query"| SemanticSource
+    Selector -.->|"Generate Pipeline"| LLM
+    Refiner -.->|"Fix Query"| LLM
+    Parser -.->|"Format Output"| LLM
+    
+    Executor --> MongoRouter
+    MCPClient --> MongoDB
+    DirectClient --> MongoDB
+    
+    style User fill:#e1f5ff
+    style Agent fill:#fff4e1
+    style SemanticSource fill:#f0f0f0
+    style LLM fill:#e8f5e9
+    style MongoRouter fill:#fce4ec
+    style MongoDB fill:#c8e6c9
+    style Result fill:#e1f5ff
 ```
-┌─────────────┐
-│   User      │
-│   Query     │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────────┐
-│   MongoDB Agent     │
-│   (LangGraph)       │
-├─────────────────────┤
-│ 1. Selector         │
-│ 2. Query Builder    │
-│ 3. Query Executor   │
-│ 4. Output Parser    │
-└──────┬──────────────┘
-       │
-       ├────────────────┐
-       │                │
-       ▼                ▼
-┌──────────┐    ┌──────────────┐
-│   LLM    │    │   MongoDB    │
-│ Provider │    │     MCP      │
-└──────────┘    └──────────────┘
-```
+
+### Architecture Flow
+
+1. **User Query** → **Ingress** - Initialize agent state with user question
+2. **Ingress** → **Selector** - Loads semantic model (schema) from Local YAML or Weaviate, then uses LLM to generate MongoDB aggregation pipeline
+3. **Selector** → **Query Executor** - Executes the generated MongoDB query via:
+   - **MCP Client** (OAuth2) - For Model Context Protocol integration
+   - **Direct Client** (PyMongo) - For direct MongoDB connection
+4. **Query Executor** → **Router** - Checks execution result:
+   - ✅ **Success** → Go to Output Parser
+   - ❌ **Error** (recoverable) → Go to Query Refiner
+   - 💀 **Fatal Error** → Return error to user
+5. **Query Refiner** → **Query Executor** - LLM fixes the query and retries (max retry limit: 1)
+6. **Output Parser** → **Result** - LLM converts raw MongoDB results to natural language
+7. **Return** - Final answer delivered to user
 
 ---
 

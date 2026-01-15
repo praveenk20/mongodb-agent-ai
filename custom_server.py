@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Cisco Systems, Inc. and its affiliates
+
 """
 Custom MongoDB Agent Server with Static File Support
 Serves both API docs and HTML documentation files
@@ -23,6 +26,11 @@ DISTRIBUTION_DIR = Path(__file__).parent.absolute()
 
 # Mount static files for HTML documentation
 app.mount("/static", StaticFiles(directory=str(DISTRIBUTION_DIR)), name="static")
+
+# Mount images directory for architecture diagrams
+images_dir = DISTRIBUTION_DIR / "images"
+if images_dir.exists():
+    app.mount("/images", StaticFiles(directory=str(images_dir)), name="images")
 
 # Serve README.html as the root page
 @app.get("/")
@@ -107,4 +115,4 @@ async def read_usage():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="127.0.0.1", port=8001, reload=True)
+    uvicorn.run(app, host="127.0.0.1", port=8000, reload=True)

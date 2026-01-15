@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Cisco Systems, Inc. and its affiliates
+
 """
 Test Direct MongoDB Connection
 ===============================

@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Cisco Systems, Inc. and its affiliates
+
 """
 MongoDB Agent AI - Setup Configuration
 """
@@ -11,7 +14,7 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='mongodb-agent-ai',
-    version='1.0.0',
+    version='1.0.1',
     author='Cisco IT Supply Chain Team',
     author_email='supply-chain-team@cisco.com',
     description='AI-powered agent for querying MongoDB databases using natural language',

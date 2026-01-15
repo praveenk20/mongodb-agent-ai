@@ -13,6 +13,9 @@ __pycache__/
 dist/
 build/
 
+# Source code (private - not shared)
+mongodb_agent/
+
 # Logs
 *.log
 logs/
@@ -39,3 +42,4 @@ ENV/
 *.tmp
 *.bak
 *.swp
+architecture copy.html

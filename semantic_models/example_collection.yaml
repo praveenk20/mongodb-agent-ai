@@ -10,6 +10,97 @@ collection_info:
   business_flow: "Your Business Domain"  # e.g., "orders", "customers"
   application_domain: "Your Application"
 
+# ===========================================
+# BUSINESS RULES - APPLICATION-SPECIFIC LOGIC
+# ===========================================
+# Define domain-specific rules to optimize query generation
+business_rules:
+  # Core Collections - Define collection hierarchy and importance
+  core_collections:
+    primary:
+      - name: "your_main_collection"
+        role: "primary_entity"
+        mandatory: true
+        priority: "critical"
+        description: "Primary collection (MUST HAVE)"
+        business_importance: "critical"
+        query_frequency: "very_high"
+    
+    bridge:
+      - name: "your_bridge_collection"
+        role: "bridge_entity"
+        mandatory: false
+        priority: "high"
+        description: "Bridge collection for relationships"
+        business_importance: "high"
+        query_frequency: "high"
+    
+    dependent:
+      - name: "your_dependent_collection"
+        role: "direct_relationship"
+        priority: "medium"
+        description: "Related details collection"
+        business_importance: "medium"
+        query_frequency: "medium"
+
+  # Join Patterns - Define common join operations
+  join_patterns:
+    direct_joins:
+      - from: "main_collection._id"
+        to: "related_collection.ref_field"
+        description: "Direct relationship"
+        pattern_type: "direct"
+    
+    bridged_joins:
+      - step1:
+          from: "main_collection._id"
+          to: "bridge_collection.main_ref"
+          description: "Main to bridge"
+        step2:
+          from: "bridge_collection._id"
+          to: "detail_collection.bridge_ref"
+          description: "Bridge to details"
+        description: "Two-step join through bridge collection"
+        pattern_type: "bridged"
+        critical: true
+
+  # Field Priorities - Define important fields by query type
+  field_priorities:
+    general_queries:
+      essential_fields:
+        - "name"
+        - "_id"
+        - "status"
+      high_priority_fields:
+        - "createdDate"
+        - "updatedDate"
+
+  # Query Type Rules - Define collection and field limits by query type
+  query_type_rules:
+    listing_queries:
+      max_collections: 3
+      max_fields: 10
+      essential_collections: ["your_main_collection"]
+      relevance_threshold: 0.8
+    
+    detailed_queries:
+      max_collections: 5
+      max_fields: 15
+      essential_collections: ["your_main_collection", "related_collection"]
+      relevance_threshold: 0.7
+    
+    default:
+      max_collections: 4
+      max_fields: 12
+      essential_collections: ["your_main_collection"]
+      relevance_threshold: 0.7
+
+  # Domain Keywords - Help classify query types
+  domain_keywords:
+    listing_related: ["list", "all", "show all", "find all"]
+    detail_related: ["details", "information", "about", "specific"]
+    reporting_related: ["report", "summary", "statistics", "count"]
+
 description: "Describe what this collection stores"
 
 # ===========================================

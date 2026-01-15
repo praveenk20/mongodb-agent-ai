@@ -10,7 +10,7 @@ set +a
 
 # Default values
 HOST="${HOST:-127.0.0.1}"
-PORT="${PORT:-8001}"
+PORT="${PORT:-8000}"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -28,13 +28,13 @@ while [[ $# -gt 0 ]]; do
             echo ""
             echo "Options:"
             echo "  --host HOST       Server host (default: 127.0.0.1)"
-            echo "  --port PORT       Server port (default: 8001)"
+            echo "  --port PORT       Server port (default: 8000)"
             echo "  --help            Show this help message"
             echo ""
             echo "Examples:"
             echo "  ./start_custom_server.sh"
             echo "  ./start_custom_server.sh --port 8002"
-            echo "  ./start_custom_server.sh --host 0.0.0.0 --port 8001"
+            echo "  ./start_custom_server.sh --host 0.0.0.0 --port 8000"
             exit 0
             ;;
         *)
