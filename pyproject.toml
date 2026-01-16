@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
-    {name = "Cisco IT Supply Chain Team", email = "supply-chain-team@cisco.com"}
+    {name = "MongoDB Agent Contributors", email = "praveenkumar.kalamani@gmail.com"}
 ]
 keywords = ["mongodb", "ai", "agent", "natural-language", "llm", "langchain", "database", "query"]
 classifiers = [

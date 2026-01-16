@@ -15,8 +15,8 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
 setup(
     name='mongodb-agent-ai',
     version='1.0.1',
-    author='Cisco IT Supply Chain Team',
-    author_email='supply-chain-team@cisco.com',
+    author='MongoDB Agent Contributors',
+    author_email='mongodb-agent@example.com',
     description='AI-powered agent for querying MongoDB databases using natural language',
     long_description=long_description,
     long_description_content_type='text/markdown',
