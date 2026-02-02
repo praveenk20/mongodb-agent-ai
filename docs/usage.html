@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usage Examples - MongoDB Agent AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 5px;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 5px 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .example h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .response {
+            background: #d1fae5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .next-steps a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .next-steps a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div><a href="index.html">← Back to Documentation Hub</a></div>
+        <div>MongoDB Agent AI - Usage Examples</div>
+    </div>
+
+    <div class="container">
+        <h1>💡 Usage Examples</h1>
+        <p>Real-world examples of natural language queries and their results.</p>
+
+        <h2>🚀 Starting the Server</h2>
+        <pre><code># Activate virtual environment
+source venv/bin/activate
+
+# Start MongoDB Agent
+python3 -m mongodb_agent.api
+
+# Server runs on http://localhost:8001</code></pre>
+
+        <h2 id="basic-queries">📊 Basic Queries</h2>
+
+        <div class="example">
+            <h4>Example 1: Count Documents</h4>
+            <p><strong>Question:</strong> "How many documents are in the B2BTransaction collection?"</p>
+            
+            <p><strong>cURL:</strong></p>
+            <pre><code>curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "How many documents are in the B2BTransaction collection?",
+    "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+    "include_debug": true
+  }'</code></pre>
+
+            <div class="response">
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "query_result": [
+    {"count": 15842}
+  ],
+  "query_generated": [
+    {"$count": "count"}
+  ],
+  "execution_time_seconds": 0.234
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="example">
+            <h4>Example 2: Simple Filter with Grouping</h4>
+            <p><strong>Question:</strong> "Group all transactions by state for partner name 'FEDEX_TPL'"</p>
+            
+            <p><strong>cURL:</strong></p>
+            <pre><code>curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Group all transactions state and partner name :'FEDEX_TPL' top 10 records?",
+    "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+    "include_debug": true
+  }'</code></pre>
+
+            <div class="response">
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "question": "Show me 10 completed orders",
+  "yaml_file_name": "orders_semantic_model.yaml",
+  "mongodb_query": "db.orders.aggregate([{\"$match\":{\"status\":\"completed\"}},{\"$limit\":10}])",
+  "query_result": [
+    {"_id": "order_001", "status": "completed", "total": 125.50},
+    {"_id": "order_002", "status": "completed", "total": 89.99}
+  ],
+  "natural_language_response": "• Found 10 completed orders with a total value of $1,254.50",
+  "execution_time_ms": 234.56,
+  "status": "success",
+  "timestamp": "2026-02-02T12:00:00"
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="example">
+            <h4>Example 3: Aggregation with Count</h4>
+            <p><strong>Question:</strong> "Count transactions by processing state"</p>
+            
+            <p><strong>cURL:</strong></p>
+            <pre><code>curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Count all transactions by processing state",
+    "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+    "include_debug": false
+  }'</code></pre>
+
+            <div class="response">
+                <p><strong>Response:</strong></p>
+                <pre><code>{
+  "question": "Count all transactions by processing state",
+  "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+  "mongodb_query": "db.transactions.aggregate([{\"$group\":{\"_id\":\"$processing_state\",\"count\":{\"$sum\":1}}},{\"$project\":{\"state\":\"$_id\",\"count\":1,\"_id\":0}}])",
+  "query_result": [
+    {"state": "COMPLETED", "count": 1250},
+    {"state": "PENDING", "count": 89},
+    {"state": "ERROR", "count": 12}
+  ],
+  "natural_language_response": "• COMPLETED: 1,250 transactions\\n• PENDING: 89 transactions\\n• ERROR: 12 transactions",
+  "execution_time_ms": 456.78,
+  "status": "success",
+  "timestamp": "2026-02-02T12:00:00"
+}</code></pre>
+            </div>
+        </div>
+
+        <h2 id="advanced-queries">🎯 Advanced Queries</h2>
+
+        <div class="example">
+            <h4>Example 4: Date Range Filter</h4>
+            <p><strong>Question:</strong> "Show me transactions from last month in ERROR state"</p>
+            
+            <p><strong>cURL:</strong></p>
+            <pre><code>curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Show me transactions from last month in ERROR state",
+    "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+    "include_debug": true
+  }'</code></pre>
+
+            <div class="response">
+                <p><strong>Generated Query:</strong></p>
+                <pre><code>[
+  {
+    "$match": {
+      "created_date": {
+        "$gte": "2024-11-01",
+        "$lte": "2024-11-30"
+      },
+      "total": {"$gt": 100}
+    }
+  },
+  {"$sort": {"created_date": -1}},
+  {"$limit": 50}
+]</code></pre>
+            </div>
+        </div>
+
+        <div class="example">
+            <h4>Example 5: Multi-Stage Aggregation</h4>
+            <p><strong>Question:</strong> "What are the top 5 partner names by transaction count?"</p>
+            
+            <p><strong>cURL:</strong></p>
+            <pre><code>curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What are the top 5 partner names by transaction count?",
+    "yaml_file_name": "b2btransaction_semantic_model_template.yaml",
+    "include_debug": true
+  }'</code></pre>
+
+            <div class="response">
+                <p><strong>Generated Query:</strong></p>
+                <pre><code>[
+  {
+    "$match": {
+      "order_date": {
+        "$gte": "2024-10-01",
+        "$lte": "2024-12-31"
+      }
+    }
+  },
+  {"$unwind": "$items"},
+  {
+    "$group": {
+      "_id": "$items.product_id",
+      "total_sales": {"$sum": "$items.quantity"},
+      "revenue": {"$sum": {"$multiply": ["$items.price", "$items.quantity"]}}
+    }
+  },
+  {"$sort": {"revenue": -1}},
+  {"$limit": 5},
+  {
+    "$project": {
+      "product_id": "$_id",
+      "total_sales": 1,
+      "revenue": 1,
+      "_id": 0
+    }
+  }
+]</code></pre>
+            </div>
+        </div>
+
+        <div class="example">
+            <h4>Example 6: Complex Join-like Query</h4>
+            <p><strong>Question:</strong> "Show me customers who placed more than 10 orders"</p>
+            
+            <p><strong>Generated Query:</strong></p>
+            <pre><code>[
+  {
+    "$group": {
+      "_id": "$customer_id",
+      "order_count": {"$sum": 1},
+      "total_spent": {"$sum": "$total"}
+    }
+  },
+  {
+    "$match": {
+      "order_count": {"$gt": 10}
+    }
+  },
+  {"$sort": {"order_count": -1}},
+  {
+    "$project": {
+      "customer_id": "$_id",
+      "order_count": 1,
+      "total_spent": 1,
+      "_id": 0
+    }
+  }
+]</code></pre>
+        </div>
+
+        <h2>🐍 Python Example</h2>
+        <pre><code>import requests
+
+def query_mongodb(question, yaml_file_name, include_debug=True):
+    """Query MongoDB using natural language"""
+    url = "http://localhost:8001/api/mongodb"
+    payload = {
+        "question": question,
+        "yaml_file_name": yaml_file_name,
+        "include_debug": include_debug
+    }
+    
+    response = requests.post(url, json=payload)
+    return response.json()
+
+# Example usage
+result = query_mongodb(
+    "Group all transactions state and partner name :'FEDEX_TPL' top 10 records?",
+    "b2btransaction_semantic_model_template.yaml",
+    include_debug=True
+)
+
+print(f"Query: {result['mongodb_query']}")
+print(f"Results: {result['query_result']}")
+print(f"Summary: {result['natural_language_response']}")
+print(f"Time: {result['execution_time_ms']}ms")</code></pre>
+
+        <h2>📱 JavaScript/Node.js Example</h2>
+        <pre><code>const axios = require('axios');
+
+async function queryMongoDB(question, yamlFileName, includeDebug = true) {
+    const response = await axios.post('http://localhost:8001/api/mongodb', {
+        question: question,
+        yaml_file_name: yamlFileName,
+        include_debug: includeDebug
+    });
+    
+    return response.data;
+}
+
+// Example usage
+(async () => {
+    const result = await queryMongoDB(
+        'Group all transactions state and partner name :FEDEX_TPL top 10 records?',
+        'b2btransaction_semantic_model_template.yaml',
+        true
+    );
+    
+    console.log('Generated Query:', result.mongodb_query);
+    console.log('Results:', result.query_result);
+    console.log('Summary:', result.natural_language_response);
+    console.log('Execution Time:', result.execution_time_ms + 'ms');
+})();</code></pre>
+
+        <h2>💬 Natural Language Tips</h2>
+
+        <div class="info-box">
+            <h3>✅ Good Questions</h3>
+            <ul>
+                <li>"How many orders were completed last month?"</li>
+                <li>"Show me customers with over $1000 in purchases"</li>
+                <li>"What's the average order value by region?"</li>
+                <li>"Find all pending orders from the last 7 days"</li>
+                <li>"Top 10 products by revenue in Q4"</li>
+            </ul>
+
+            <h3>❌ Questions to Avoid</h3>
+            <ul>
+                <li>Too vague: "Show me data"</li>
+                <li>Missing context: "How many?" (how many what?)</li>
+                <li>Ambiguous: "Find stuff from yesterday" (what stuff?)</li>
+            </ul>
+        </div>
+
+        <h2>📋 Common Query Patterns</h2>
+
+        <h3>Counting</h3>
+        <ul>
+            <li>"How many [items] are there?"</li>
+            <li>"Count [items] with [condition]"</li>
+            <li>"Total number of [items]"</li>
+        </ul>
+
+        <h3>Filtering</h3>
+        <ul>
+            <li>"Show me [items] where [condition]"</li>
+            <li>"Find all [items] with [attribute] = [value]"</li>
+            <li>"Get [items] from [date range]"</li>
+        </ul>
+
+        <h3>Aggregation</h3>
+        <ul>
+            <li>"What's the total/average/sum of [field]?"</li>
+            <li>"Group [items] by [field]"</li>
+            <li>"Calculate [metric] per [dimension]"</li>
+        </ul>
+
+        <h3>Ranking</h3>
+        <ul>
+            <li>"Top N [items] by [metric]"</li>
+            <li>"Most/least [attribute]"</li>
+            <li>"Highest/lowest [value]"</li>
+        </ul>
+
+        <h2>⚡ Performance Tips</h2>
+        <ul>
+            <li>Be specific in your questions to get more optimized queries</li>
+            <li>Mention time ranges to leverage indexed fields</li>
+            <li>Ask for limited results when exploring data</li>
+            <li>Use collection-specific terminology for better accuracy</li>
+        </ul>
+
+        <div class="next-steps">
+            <h3>📚 Next Steps</h3>
+            <ul>
+                <li><a href="api-reference.html">📖 API Reference</a> - Complete endpoint documentation</li>
+                <li><a href="troubleshooting.html">🔧 Troubleshooting</a> - Fix common issues</li>
+                <li><a href="architecture.html">🏗️ Architecture</a> - Understand how it works</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

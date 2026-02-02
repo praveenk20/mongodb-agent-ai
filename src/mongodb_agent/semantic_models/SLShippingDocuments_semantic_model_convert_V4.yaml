@@ -1,0 +1,3732 @@
+collection_info:
+  database: CCDTOOl
+  schema_name: XXGTMDOC  # TODO: Replace with actual username
+  business_flow: SCL
+  application_domain: "supply_chain_logistics"
+
+description: "Semantic Model for Supply Chain Logistics Shipping Documents - Complete SL shipping documents collection with 333+ fields for export/import documentation and logistics tracking"
+
+# ===========================================  
+# BUSINESS RULES - SL SHIPPING DOCUMENTS DOMAIN
+# Application-specific logic for supply chain logistics queries
+# ===========================================
+business_rules:
+  # Core Collections for SL Shipping Documents Domain
+  core_collections:
+    primary:
+      - name: "SLShippingDocuments"
+        role: "primary_entity"
+        mandatory: true
+        priority: "critical"
+        description: "Primary SL shipping documents collection"
+        business_importance: "critical"
+        query_frequency: "very_high"
+
+  # SL Shipping Documents Field Priorities
+  field_priorities:
+    document_search:
+      essential_fields:
+        - "_id"
+        - "deliveryId"
+        - "partnerMsgId"
+        - "orderNumber"
+        - "orderType"
+        - "documentStatus"
+        - "trxUserGroup"              # ← MOVED FROM high_priority - Always include for user group queries
+        - "partNumber"                 # ← MOVED FROM high_priority - Critical for line item identification
+        - "businessEntity"             # ← MOVED FROM high_priority - Key business context field
+        - "unitValueExport"            # ← Added - Critical for export value calculations
+      high_priority_fields:
+        - "documentDate"
+        - "shipDate"
+        - "documentType"
+        - "customerNumber"
+        - "vendorNumber"
+        - "insuranceImportCurrency"
+    
+    shipping_logistics:
+      essential_fields:
+        - "deliveryId"
+        - "shipFromCountryCode"
+        - "shipToCountryCode"
+        - "shipDate"
+        - "shipFromOrg"
+        - "shipToOrg"
+        - "carrierName"
+        - "freightChargesExport"
+        - "freightChargesImport"
+        - "trxUserGroup"              # ← Added - Important for logistics tracking
+      high_priority_fields:
+        - "documentDate"
+        - "deliveryDate"
+        - "serviceLevel"
+        - "trackingNumber"
+        - "partNumber"                 # ← Added - Important for shipment contents
+    
+    financial_analysis:
+      essential_fields:
+        - "totalValueExport"
+        - "totalValueImport"
+        - "exportCurrency"
+        - "importCurrency"
+        - "subTotalValueExport"
+        - "subTotalValueImport"
+        - "freightChargesExport"
+        - "freightChargesImport"
+        - "insuranceImportCurrency"
+      high_priority_fields:
+        - "vtValueExport"
+        - "vtValueImport"
+        - "insuranceAmount"
+        - "dutyAmount"
+    
+    trade_compliance:
+      essential_fields:
+        - "lines.general.importHTS"
+        - "lines.general.exportHTS"
+        - "countryOfOrigin"
+        - "eccn"
+        - "commodityCode"
+        - "partNumber"                 # ← Added - Critical for compliance tracking
+      high_priority_fields:
+        - "authCode"
+        - "licenseNumber"
+        - "licenseException"
+        - "classification"
+        - "controlListEntry"
+    
+    country_analysis:
+      essential_fields:
+        - "shipFromCountryCode"
+        - "shipToCountryCode"
+        - "billToExportCountryCode"
+        - "billToImportCountryCode"
+        - "countryOfOrigin"
+      high_priority_fields:
+        - "eorExportCountryCode"
+        - "eorImportCountryCode"
+        - "sellerExportCountryCode"
+        - "sellerImportCountryCode"
+    
+    default:
+      essential_fields:
+        - "_id"
+        - "deliveryId"
+        - "orderNumber"
+        - "documentStatus"
+        - "trxUserGroup"              # ← Always include for any query type
+        - "partNumber"                 # ← Always include for any query type
+        - "businessEntity"             # ← Always include for any query type
+      high_priority_fields:
+        - "documentDate"
+        - "shipDate"
+        - "shipFromCountryCode"
+        - "shipToCountryCode"
+        - "totalValueExport"
+        - "totalValueImport"
+
+  # Query Type Specific Rules for SL Domain
+  query_type_rules:
+    document_lookup:
+      max_collections: 1
+      max_fields: 15
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.8
+      
+    shipping_analysis:
+      max_collections: 1
+      max_fields: 20
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.7
+      
+    financial_reporting:
+      max_collections: 1
+      max_fields: 18
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.7
+      
+    country_analysis:
+      max_collections: 1
+      max_fields: 16
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.7
+      
+    trade_compliance:
+      max_collections: 1
+      max_fields: 15
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.7
+      
+    comprehensive_reports:
+      max_collections: 1
+      max_fields: 30
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.6
+      
+    default:
+      max_collections: 1
+      max_fields: 18
+      essential_collections: ["SLShippingDocuments"]
+      relevance_threshold: 0.7
+
+  # Business Domain Keywords for SL Shipping Documents
+  domain_keywords:
+    sl_related: ["sl", "supply chain", "logistics", "scl", "supply", "chain"]
+    shipping_related: ["ship", "shipment", "delivery", "carrier", "freight", "transport", "logistics"]
+    country_related: ["country", "origin", "destination", "from", "to"]
+    financial_related: ["value", "cost", "price", "total", "freight", "currency", "amount", "duty", "export", "import", "charge"]
+    compliance_related: ["hts", "eccn", "license", "auth", "classification", "commodity"]
+    document_related: ["document", "order", "delivery", "partner", "message", "status"]
+
+# Legacy query-relevance field filtering configuration (preserved for compatibility)
+query_relevance_rules:
+  # Core fields that are always included (identifiers, common filters)
+  always_include:
+    - "_id"
+    - "deliveryId" 
+    - "partnerMsgId"
+    - "documentDate"
+    - "shipDate"
+    - "documentStatus"
+    - "orderNumber"
+    - "orderType"
+    - "businessEntity"
+    - "trxUserGroup"              # ← Added - Always include for user group queries
+    - "partNumber"                 # ← Added - Always include for part number queries
+
+collections:
+  SLShippingDocuments:
+    name: SLShippingDocuments
+    description: Complete supply chain logistics shipping documents collection
+    fields:
+      headers:
+        data_type: string
+        description: ''
+        nested_path: headers
+        category: general
+        unique: false
+      ci:
+        data_type: string
+        description: ''
+        nested_path: lines.ci
+        category: general
+        unique: false
+      addSubtractFlag:
+        data_type: string
+        description: values would be A or S
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.addSubtractFlag
+        category: general
+      addSubtractFlagExport:
+        data_type: string
+        description: values would be A or S
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.addSubtractFlagExport
+        category: trade_compliance
+      applyRules:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.applyRules
+        category: general
+        unique: false
+      billToExport:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport
+        category: trade_compliance
+        unique: false
+      billToExportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportAddressLine1
+        category: trade_compliance
+        unique: false
+      billToExportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportAddressLine2
+        category: trade_compliance
+        unique: false
+      billToExportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportAddressLine3
+        category: trade_compliance
+        unique: false
+      billToExportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportAddressLine4
+        category: trade_compliance
+        unique: false
+      billToExportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EXB
+      billToExportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportCity
+        category: trade_compliance
+        unique: false
+      billToExportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportCompanyName
+        category: trade_compliance
+        unique: false
+      billToExportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportContactEmail
+        category: trade_compliance
+        unique: false
+      billToExportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      billToExportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportContactName
+        category: trade_compliance
+        unique: false
+      billToExportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportContactNumber
+        category: trade_compliance
+        unique: false
+      billToExportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportCountry
+        category: trade_compliance
+        unique: false
+      billToExportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportCountryCode
+        category: trade_compliance
+        unique: false
+      billToExportState:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportState
+        category: trade_compliance
+        unique: false
+      billToExportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportTaxID
+        category: trade_compliance
+        unique: false
+      billToExportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToExport.billToExportZip
+        category: trade_compliance
+        unique: false
+      billToImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.billToImport
+        category: trade_compliance
+        unique: false
+      billToImportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportAddressLine1
+        category: trade_compliance
+        unique: false
+      billToImportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportAddressLine2
+        category: trade_compliance
+        unique: false
+      billToImportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportAddressLine3
+        category: trade_compliance
+        unique: false
+      billToImportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportAddressLine4
+        category: trade_compliance
+        unique: false
+      billToImportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - IMB
+      billToImportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportCity
+        category: trade_compliance
+        unique: false
+      billToImportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportCompanyName
+        category: trade_compliance
+        unique: false
+      billToImportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportContactEmail
+        category: trade_compliance
+        unique: false
+      billToImportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      billToImportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportContactName
+        category: trade_compliance
+        unique: false
+      billToImportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportContactNumber
+        category: trade_compliance
+        unique: false
+      billToImportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportCountry
+        category: trade_compliance
+        unique: false
+      billToImportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportCountryCode
+        category: trade_compliance
+        unique: false
+      billToImportState:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportState
+        category: trade_compliance
+        unique: false
+      billToImportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportTaxID
+        category: trade_compliance
+        unique: false
+      billToImportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.general.billToImport.billToImportZip
+        category: trade_compliance
+        unique: false
+      businessEntity:
+        data_type: string
+        description: 'possible values : SL, RL, RF'
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.businessEntity
+        category: general
+      carrier:
+        data_type: string
+        description: carrier used in the shipment
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.carrier
+        category: general
+      chargableWeightKGS:
+        data_type: string
+        description: Chargeable weight in KG (stored as string, convert to number
+          for calculations)
+        sample_values:
+        - '25.85'
+        unique: false
+        nested_path: headers.general.chargableWeightKGS
+        category: measurement
+        numeric_string: true
+      chargableWeightLBS:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.chargableWeightLBS
+        category: logistics
+        unique: false
+      contract:
+        data_type: string
+        description: used in future for RMA contracts
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.contract
+        category: general
+      conveyanceName:
+        data_type: string
+        description: Vessel Name , in case of ocean shipments
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.conveyanceName
+        category: contact
+      countryOfAcquisition:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.countryOfAcquisition
+        category: location
+        unique: false
+      countryOfProvenance:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.countryOfProvenance
+        category: location
+        unique: false
+      deliveryId:
+        data_type: string
+        description: Delivery ID
+        sample_values:
+        - sample_value
+        unique: true
+        nested_path: headers.general.deliveryId
+        category: identifier
+      documentDate:
+        data_type: Date
+        description: date of document generation
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.documentDate
+        category: document
+      documentIdentifier:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.documentIdentifier
+        category: document
+        unique: false
+        sample_values:
+        - SERVICES-CSFPRD46366903-CE-165863738-TRANSFER-FGI-1.1
+      documentList:
+        data_type: array
+        description: List of docs needed
+        sample_values:
+        - ["CI", "SLI", "PL"]
+        unique: false
+        nested_path: headers.general.documentList
+        category: document
+      documentStatus:
+        data_type: string
+        description: 'documentGeneration to documentStatus -HOLD, NEW; COMPLETE, UNPRINTED;
+          PRINTED; VOID '
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.documentStatus
+        category: document
+      editFlag:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.editFlag
+        category: general
+        unique: false
+        sample_values:
+        - Y
+      eorExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport
+        category: trade_compliance
+        unique: false
+      eorExportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportAddressLine1
+        category: trade_compliance
+        unique: false
+      eorExportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportAddressLine2
+        category: trade_compliance
+        unique: false
+      eorExportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportAddressLine3
+        category: trade_compliance
+        unique: false
+      eorExportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportAddressLine4
+        category: trade_compliance
+        unique: false
+      eorExportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EER
+      eorExportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportCity
+        category: trade_compliance
+        unique: false
+      eorExportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportCompanyName
+        category: trade_compliance
+        unique: false
+      eorExportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportContactEmail
+        category: trade_compliance
+        unique: false
+      eorExportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      eorExportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportContactName
+        category: trade_compliance
+        unique: false
+      eorExportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportContactNumber
+        category: trade_compliance
+        unique: false
+      eorExportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportCountry
+        category: trade_compliance
+        unique: false
+      eorExportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportCountryCode
+        category: trade_compliance
+        unique: false
+      eorExportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportState
+        category: trade_compliance
+        unique: false
+      eorExportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportTaxID
+        category: trade_compliance
+        unique: false
+      eorExportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorExport.eorExportZip
+        category: trade_compliance
+        unique: false
+      eorImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport
+        category: trade_compliance
+        unique: false
+      eorImportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportAddressLine1
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 170 W. TASMAN DRIVE
+      eorImportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportAddressLine2
+        category: trade_compliance
+        unique: false
+      eorImportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportAddressLine3
+        category: trade_compliance
+        unique: false
+      eorImportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportAddressLine4
+        category: trade_compliance
+        unique: false
+      eorImportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - IER
+      eorImportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportCity
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - SAN JOSE
+      eorImportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportCompanyName
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - CISCO SYSTEMS INC
+      eorImportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportContactEmail
+        category: trade_compliance
+        unique: false
+      eorImportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      eorImportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportContactName
+        category: trade_compliance
+        unique: false
+      eorImportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportContactNumber
+        category: trade_compliance
+        unique: false
+      eorImportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportCountry
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - UNITED STATES
+      eorImportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportCountryCode
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - US
+      eorImportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportState
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - CA
+      eorImportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportTaxID
+        category: trade_compliance
+        unique: false
+      eorImportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.eorImport.eorImportZip
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 95134
+      exportCurrency:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.exportCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      exportCurrencyExchangeRate:
+        data_type: string
+        description: exchange rate of export currency/USD
+        sample_values:
+        - 1.5
+        unique: false
+        nested_path: headers.general.exportCurrencyExchangeRate
+        category: trade_compliance
+      freightCalcType:
+        data_type: string
+        description: C = cisco, A=actual, N=No
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.freightCalcType
+        category: general
+      freightCalcTypeExport:
+        data_type: string
+        description: C = cisco, A=actual, N=No
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.freightCalcTypeExport
+        category: trade_compliance
+      freightCalcValue:
+        data_type: string
+        description: if C , ex 20% then send 0.2, if A, N then 0
+        sample_values:
+        - 0.2
+        unique: false
+        nested_path: headers.general.freightCalcValue
+        category: monetary
+      freightCalcValueExport:
+        data_type: string
+        description: if C , ex 20% then send 0.2, if A, N then 0
+        sample_values:
+        - 0.2
+        unique: false
+        nested_path: headers.general.freightCalcValueExport
+        category: monetary
+      freightChargesExport:
+        data_type: string
+        description: Freight Charges (stored as string, convert to number for calculations)
+        sample_values:
+        - '1250.75'
+        unique: false
+        nested_path: headers.general.freightChargesExport
+        category: trade_compliance
+        numeric_string: true
+      freightChargesExportCurrency:
+        data_type: string
+        description: Freight Charges currency
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.freightChargesExportCurrency
+        category: trade_compliance
+      freightChargesImport:
+        data_type: string
+        description: Import freight charges (stored as string, convert to number for
+          calculations)
+        sample_values:
+        - '850.25'
+        unique: false
+        nested_path: headers.general.freightChargesImport
+        category: general
+        numeric_string: true
+      freightChargesImportCurrency:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.freightChargesImportCurrency
+        category: trade_compliance
+        unique: false
+      hazardous:
+        data_type: string
+        description: Hazardous Flag - If any PID's Hazardous we need this field as
+          "Y"
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.hazardous
+        category: general
+      hsDisclaimerNote:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.hsDisclaimerNote
+        category: compliance
+        unique: false
+        sample_values:
+        - All trade information is provided AS IS and is subject to change without
+          notice. Cisco makes no repr
+      importCurrency:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.importCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      importCurrencyExchangeRate:
+        data_type: string
+        description: exchange rate of import currency/USD
+        sample_values:
+        - 1.2
+        unique: false
+        nested_path: headers.general.importCurrencyExchangeRate
+        category: general
+      incoTerm:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.incoTerm
+        category: general
+        unique: false
+        sample_values:
+        - DAP
+      incoTermLocation:
+        data_type: string
+        description: Incoterm Location
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.incoTermLocation
+        category: general
+      insuranceCalcType:
+        data_type: string
+        description: C = cisco, A=actual, N=No
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceCalcType
+        category: general
+      insuranceCalcTypeExport:
+        data_type: string
+        description: C = cisco, A=actual, N=No
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceCalcTypeExport
+        category: trade_compliance
+      insuranceCalcValue:
+        data_type: string
+        description: if C , ex 20% then send 0.2, if A, N then 0
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceCalcValue
+        category: monetary
+      insuranceCalcValueExport:
+        data_type: string
+        description: if C , ex 20% then send 0.2, if A, N then 0
+        sample_values:
+        - 1
+        unique: false
+        nested_path: headers.general.insuranceCalcValueExport
+        category: monetary
+      insuranceExport:
+        data_type: string
+        description: Insurance Amount if applicable
+        sample_values:
+        - 20
+        unique: false
+        nested_path: headers.general.insuranceExport
+        category: trade_compliance
+      insuranceExportCurrency:
+        data_type: string
+        description: Insurance Amount Currency - Business Review
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceExportCurrency
+        category: trade_compliance
+      insuranceImport:
+        data_type: string
+        description: Insurance Amount if applicable
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceImport
+        category: general
+      insuranceImportCurrency:
+        data_type: string
+        description: Insurance Amount Currency - Business Review
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.insuranceImportCurrency
+        category: general
+      iorExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport
+        category: trade_compliance
+        unique: false
+      iorExportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportAddressLine1
+        category: trade_compliance
+        unique: false
+      iorExportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportAddressLine2
+        category: trade_compliance
+        unique: false
+      iorExportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportAddressLine3
+        category: trade_compliance
+        unique: false
+      iorExportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportAddressLine4
+        category: trade_compliance
+        unique: false
+      iorExportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EIR
+      iorExportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportCity
+        category: trade_compliance
+        unique: false
+      iorExportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportCompanyName
+        category: trade_compliance
+        unique: false
+      iorExportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportContactEmail
+        category: trade_compliance
+        unique: false
+      iorExportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      iorExportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportContactName
+        category: trade_compliance
+        unique: false
+      iorExportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportContactNumber
+        category: trade_compliance
+        unique: false
+      iorExportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportCountry
+        category: trade_compliance
+        unique: false
+      iorExportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportCountryCode
+        category: trade_compliance
+        unique: false
+      iorExportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportState
+        category: trade_compliance
+        unique: false
+      iorExportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportTaxID
+        category: trade_compliance
+        unique: false
+      iorExportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorExport.iorExportZip
+        category: trade_compliance
+        unique: false
+      iorImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport
+        category: trade_compliance
+        unique: false
+      iorImportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportAddressLine1
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - Carrera 102 A
+      iorImportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportAddressLine2
+        category: trade_compliance
+        unique: false
+      iorImportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportAddressLine3
+        category: trade_compliance
+        unique: false
+      iorImportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportAddressLine4
+        category: trade_compliance
+        unique: false
+      iorImportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - IIR
+      iorImportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportCity
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - Bogotá
+      iorImportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportCompanyName
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - FH LOGÍSTICA MOVE, S.A.S.
+      iorImportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportContactEmail
+        category: trade_compliance
+        unique: false
+      iorImportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      iorImportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportContactName
+        category: trade_compliance
+        unique: false
+      iorImportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportContactNumber
+        category: trade_compliance
+        unique: false
+      iorImportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportCountry
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - COLOMBIA
+      iorImportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportCountryCode
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - CO
+      iorImportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportState
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - DC
+      iorImportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportTaxID
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 901.393.414-1
+      iorImportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.iorImport.iorImportZip
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 703
+      lastUpdateDate:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lastUpdateDate
+        category: document
+        unique: false
+        sample_values:
+        - 29-May-2015
+      lbAmountInWords:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbAmountInWords
+        category: general
+        unique: false
+      lbBillTo:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbBillTo
+        category: location
+        unique: false
+      lbCOO:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbCOO
+        category: general
+        unique: false
+        sample_values:
+        - COO
+      lbDocumentTitle:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbDocumentTitle
+        category: document
+        unique: false
+        sample_values:
+        - SHIPPER'S LETTER OF INSTRUCTIONS
+      lbEOR:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbEOR
+        category: general
+        unique: false
+      lbExporterEIN:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbExporterEIN
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EXPORTER EIN (IRS NUMBER
+      lbFreightNote:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbFreightNote
+        category: financial
+        unique: false
+      lbHandlingUnit:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbHandlingUnit
+        category: general
+        unique: false
+      lbIOR:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbIOR
+        category: general
+        unique: false
+      lbImageFile:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbImageFile
+        category: general
+        unique: false
+      lbIncoTermLocation:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbIncoTermLocation
+        category: general
+        unique: false
+      lbLineHTS:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbLineHTS
+        category: trade_compliance
+        unique: false
+      lbLineNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbLineNumber
+        category: document
+        unique: false
+        sample_values:
+        - LINE NO
+      lbLineRepairValue:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbLineRepairValue
+        category: financial
+        unique: false
+      lbLineTotalRepairValue:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbLineTotalRepairValue
+        category: financial
+        unique: false
+      lbPartDescription:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbPartDescription
+        category: product
+        unique: false
+        sample_values:
+        - SCHEDULE B NUMBER/ MARKS, NOS, AND KINDS OF PACKAGES
+      lbPaymentMethod:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbPaymentMethod
+        category: general
+        unique: false
+        sample_values:
+        - PAYMENT METHOD
+      lbQuantity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbQuantity
+        category: logistics
+        unique: false
+      lbRepairValueTotal:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbRepairValueTotal
+        category: financial
+        unique: false
+      lbSeller:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbSeller
+        category: general
+        unique: false
+      lbShipDate:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbShipDate
+        category: document
+        unique: false
+      lbShipTo:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbShipTo
+        category: location
+        unique: false
+        sample_values:
+        - SHIP TO(COMPLETE NAME AND ADDRESS
+      lbShipper:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbShipper
+        category: location
+        unique: false
+        sample_values:
+        - U.S. PRINCIPAL PARTY IN INTEREST (USPPI(Complete name and address
+      lbUC:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.lbUC
+        category: general
+        unique: false
+      majorVersion:
+        data_type: string
+        description: Version of Document/Json sent
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.majorVersion
+        category: general
+      manualFlag:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.manualFlag
+        category: general
+        unique: false
+        sample_values:
+        - N
+      minorVersion:
+        data_type: string
+        description: Internal to GTMD- N/A
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.minorVersion
+        category: general
+      modeOfTransport:
+        data_type: string
+        description: Mode of Transport used by the carrier
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.modeOfTransport
+        category: general
+      note:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.note
+        category: general
+        unique: false
+        sample_values:
+        - System Generated
+      orderNumber:
+        data_type: string
+        description: there can be more than 1 order associated in case of consolidation.
+          Do we still need this in case of RMAs, as there will be 1 order only
+        sample_values:
+        - iesTestOrder123
+        unique: false
+        nested_path: headers.general.orderNumber
+        category: general
+      orderType:
+        data_type: string
+        description: C3 order type, TEFR DGI, INV TRANSFER, etc. ?? There is an order
+          type under each document as well. Will these
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.orderType
+        category: general
+      pageFooter:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.pageFooter
+        category: general
+        unique: false
+        sample_values:
+        - GTM-D-SERVICES-CSFPRD16586373800-1658637380147-TEFR-FGI-V-1.1
+      partnerMsgId:
+        data_type: string
+        description: EPOM System ID, upstream application unique reference if the
+          message
+        sample_values:
+        - sample_value
+        unique: true
+        nested_path: headers.general.partnerMsgId
+        category: general
+      paymentMethodExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.paymentMethodExport
+        category: trade_compliance
+        unique: false
+      paymentMethodImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.paymentMethodImport
+        category: trade_compliance
+        unique: false
+      paymentTermsExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.paymentTermsExport
+        category: trade_compliance
+        unique: false
+      paymentTermsImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.paymentTermsImport
+        category: trade_compliance
+        unique: false
+      printBreakDownNote:
+        data_type: string
+        description: if Y, then print "Above value inclues the shipping and handling"
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.printBreakDownNote
+        category: general
+      printBreakDownNoteExport:
+        data_type: string
+        description: if Y, then print "Above value inclues the shipping and handling"
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.printBreakDownNoteExport
+        category: trade_compliance
+      relatedPartyTransaction:
+        data_type: string
+        description: related party flag
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.relatedPartyTransaction
+        category: general
+      sellerExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport
+        category: trade_compliance
+        unique: false
+      sellerExportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportAddressLine1
+        category: trade_compliance
+        unique: false
+      sellerExportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportAddressLine2
+        category: trade_compliance
+        unique: false
+      sellerExportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportAddressLine3
+        category: trade_compliance
+        unique: false
+      sellerExportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportAddressLine4
+        category: trade_compliance
+        unique: false
+      sellerExportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EXS
+      sellerExportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportCity
+        category: trade_compliance
+        unique: false
+      sellerExportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportCompanyName
+        category: trade_compliance
+        unique: false
+      sellerExportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportContactEmail
+        category: trade_compliance
+        unique: false
+      sellerExportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      sellerExportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportContactName
+        category: trade_compliance
+        unique: false
+      sellerExportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportContactNumber
+        category: trade_compliance
+        unique: false
+      sellerExportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportCountry
+        category: trade_compliance
+        unique: false
+      sellerExportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportCountryCode
+        category: trade_compliance
+        unique: false
+      sellerExportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportState
+        category: trade_compliance
+        unique: false
+      sellerExportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportTaxID
+        category: trade_compliance
+        unique: false
+      sellerExportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerExport.sellerExportZip
+        category: trade_compliance
+        unique: false
+      sellerImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport
+        category: trade_compliance
+        unique: false
+      sellerImportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportAddressLine1
+        category: trade_compliance
+        unique: false
+      sellerImportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportAddressLine2
+        category: trade_compliance
+        unique: false
+      sellerImportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportAddressLine3
+        category: trade_compliance
+        unique: false
+      sellerImportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportAddressLine4
+        category: trade_compliance
+        unique: false
+      sellerImportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - IMS
+      sellerImportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportCity
+        category: trade_compliance
+        unique: false
+      sellerImportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportCompanyName
+        category: trade_compliance
+        unique: false
+      sellerImportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportContactEmail
+        category: trade_compliance
+        unique: false
+      sellerImportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      sellerImportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportContactName
+        category: trade_compliance
+        unique: false
+      sellerImportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportContactNumber
+        category: trade_compliance
+        unique: false
+      sellerImportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportCountry
+        category: trade_compliance
+        unique: false
+      sellerImportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportCountryCode
+        category: trade_compliance
+        unique: false
+      sellerImportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportState
+        category: trade_compliance
+        unique: false
+      sellerImportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportTaxID
+        category: trade_compliance
+        unique: false
+      sellerImportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sellerImport.sellerImportZip
+        category: trade_compliance
+        unique: false
+      shipDate:
+        data_type: Date
+        description: Shipment Date
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.shipDate
+        category: temporal
+      shipFromCountryCode:
+        data_type: string
+        description: Ship from Country- 2 Letter Code
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.shipFromCountryCode
+        category: address
+      shipFromOrg:
+        data_type: string
+        description: Ship from Depot
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.shipFromOrg
+        category: general
+      shipTo:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.shipTo
+        category: location
+        unique: false
+      shipToAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToAddressLine1
+        category: location
+        unique: false
+        sample_values:
+        - Autopista Medellin Km 7
+      shipToAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToAddressLine2
+        category: location
+        unique: false
+        sample_values:
+        - Celta Trade Park Bodega 51-A.
+      shipToAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToAddressLine3
+        category: location
+        unique: false
+        sample_values:
+        - Funza, Cundinamarca
+      shipToAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToAddressLine4
+        category: location
+        unique: false
+      shipToAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToAddressType
+        category: location
+        unique: false
+        sample_values:
+        - SHT
+      shipToCity:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToCity
+        category: location
+        unique: false
+        sample_values:
+        - BOGOTA
+      shipToCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToCompanyName
+        category: location
+        unique: false
+        sample_values:
+        - FHL
+      shipToContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToContactEmail
+        category: location
+        unique: false
+      shipToContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToContactFaxNumber
+        category: location
+        unique: false
+      shipToContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToContactName
+        category: location
+        unique: false
+        sample_values:
+        - Ricardo Gracia
+      shipToContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToContactNumber
+        category: location
+        unique: false
+        sample_values:
+        - 573122077869
+      shipToCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToCountry
+        category: location
+        unique: false
+        sample_values:
+        - CHINA
+      shipToCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.shipToCountryCode
+        category: location
+        unique: false
+        sample_values:
+        - IN
+      shipToState:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToState
+        category: location
+        unique: false
+        sample_values:
+        - CN-CUNDINAMARCA
+      shipToTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToTaxID
+        category: location
+        unique: false
+      shipToZip:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipTo.shipToZip
+        category: location
+        unique: false
+        sample_values:
+        - 250027
+      shipToOrg:
+        data_type: string
+        description: Ship To Depot
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.shipToOrg
+        category: general
+      shipmentDimHeight:
+        data_type: string
+        description: shipment dimension height
+        sample_values:
+        - 1.1
+        unique: false
+        nested_path: headers.general.shipmentDimHeight
+        category: general
+      shipmentDimLength:
+        data_type: string
+        description: shipment dimension Length
+        sample_values:
+        - 1.1
+        unique: false
+        nested_path: headers.general.shipmentDimLength
+        category: general
+      shipmentDimUom:
+        data_type: string
+        description: shipment dimension unit of measure
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.shipmentDimUom
+        category: general
+      shipmentDimWidth:
+        data_type: string
+        description: shipment dimension width
+        sample_values:
+        - 1.1
+        unique: false
+        nested_path: headers.general.shipmentDimWidth
+        category: general
+      shipmentGrossWeightKGS:
+        data_type: string
+        description: Shipment gross weight in KG (stored as string, convert to number
+          for calculations)
+        sample_values:
+        - '34.5'
+        unique: false
+        nested_path: headers.general.shipmentGrossWeightKGS
+        category: measurement
+        numeric_string: true
+      shipmentGrossWeightLBS:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.shipmentGrossWeightLBS
+        category: logistics
+        unique: false
+        sample_values:
+        - 89.99
+      shipmentNetWeightKGS:
+        data_type: string
+        description: Shipment net weight in KG (stored as string, convert to number
+          for calculations)
+        sample_values:
+        - '54.4'
+        unique: false
+        nested_path: headers.general.shipmentNetWeightKGS
+        category: measurement
+        numeric_string: true
+      shipmentNetWeightLBS:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.shipmentNetWeightLBS
+        category: logistics
+        unique: false
+        sample_values:
+        - 52.34
+      shipperDetails:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.shipperDetails
+        category: location
+        unique: false
+      shipperAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperAddressLine1
+        category: location
+        unique: false
+        sample_values:
+        - c/o Ryder Integrated Logistics
+      shipperAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperAddressLine2
+        category: location
+        unique: false
+        sample_values:
+        - 724 Henrietta Creek Rd
+      shipperAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperAddressLine3
+        category: location
+        unique: false
+      shipperAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperAddressLine4
+        category: location
+        unique: false
+      shipperAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperAddressType
+        category: location
+        unique: false
+        sample_values:
+        - SHF
+      shipperCity:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperCity
+        category: location
+        unique: false
+        sample_values:
+        - ROANOKE, TX
+      shipperCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperCompanyName
+        category: location
+        unique: false
+        sample_values:
+        - U06 - CISCO SYSTEMS, INC (EIN: 770059951
+      shipperContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperContactEmail
+        category: location
+        unique: false
+      shipperContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperContactFaxNumber
+        category: location
+        unique: false
+        sample_values:
+        - 817-490-8911
+      shipperContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperContactName
+        category: location
+        unique: false
+        sample_values:
+        - COORDINATOR
+      shipperContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperContactNumber
+        category: location
+        unique: false
+        sample_values:
+        - 817-490-6055
+      shipperCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperCountry
+        category: location
+        unique: false
+        sample_values:
+        - UNITED STATES
+      shipperCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperCountryCode
+        category: location
+        unique: false
+        sample_values:
+        - US
+      shipperState:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperState
+        category: location
+        unique: false
+      shipperTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperTaxID
+        category: location
+        unique: false
+        sample_values:
+        - 770059951
+      shipperZip:
+        data_type: string
+        description: ''
+        nested_path: headers.general.shipperDetails.shipperZip
+        category: location
+        unique: false
+        sample_values:
+        - 76262
+      sliAesEmailNote:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sliAesEmailNote
+        category: contact
+        unique: false
+        sample_values:
+        - aesrecords@cisco.com
+      sliExporterEinIRS:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sliExporterEinIRS
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 77-0059951
+      sliShipperAuthorizationStatement:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sliShipperAuthorizationStatement
+        category: location
+        unique: false
+        sample_values:
+        - Note: The Shipper or his authorized Agent hereby authorizes the above named
+            Company , in his name an
+      sliSignatureAuthorization:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.sliSignatureAuthorization
+        category: general
+        unique: false
+        sample_values:
+        - The exporter authorizes the forwarder named above to act as a forwarding
+          agent for export control an
+      source:
+        data_type: string
+        description: SERVICES
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.source
+        category: general
+      statementsAndLabels:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.statementsAndLabels
+        category: location
+        unique: false
+      additionalStatement1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.statementsAndLabels.additionalStatement1
+        category: location
+        unique: false
+      additionalStatement2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.statementsAndLabels.additionalStatement2
+        category: location
+        unique: false
+      destinationControlStatement:
+        data_type: string
+        description: CI, PL, SLI
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.statementsAndLabels.ciExport.destinationControlStatement
+        category: address
+      specialInstructions:
+        data_type: string
+        description: CI, SLI
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.statementsAndLabels.ciExport.specialInstructions
+        category: general
+      usppiStatement:
+        data_type: string
+        description: SLI
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.statementsAndLabels.ciExport.usppiStatement
+        category: address
+      valueStatement:
+        data_type: string
+        description: CI
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.statementsAndLabels.ciExport.valueStatement
+        category: address
+      warrantyStatement:
+        data_type: string
+        description: CI
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.statementsAndLabels.ciExport.warrantyStatement
+        category: address
+      woodPackageNote:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.statementsAndLabels.woodPackageNote
+        category: location
+        unique: false
+      subTotalValueExport:
+        data_type: string
+        description: Total of Line Value Export before insurance + freight (stored
+          as string with commas, convert to number for calculations)
+        sample_values:
+        - 15,250.75
+        unique: false
+        nested_path: headers.general.subTotalValueExport
+        category: monetary
+        numeric_string: true
+      subTotalValueImport:
+        data_type: string
+        description: Total of Line Value Import before insurance & freight (stored
+          as string with commas, convert to number for calculations)
+        sample_values:
+        - 12,850.50
+        unique: false
+        nested_path: headers.general.subTotalValueImport
+        category: monetary
+        numeric_string: true
+      templateType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.templateType
+        category: general
+        unique: false
+        sample_values:
+        - SL-EN
+      totalBoxCount:
+        data_type: string
+        description: total number of boxes / LPNs
+        sample_values:
+        - 20
+        unique: false
+        nested_path: headers.general.totalBoxCount
+        category: monetary
+      totalPalletCount:
+        data_type: string
+        description: total number of pallets used
+        sample_values:
+        - 20
+        unique: false
+        nested_path: headers.general.totalPalletCount
+        category: monetary
+      totalRepairValueExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.totalRepairValueExport
+        category: trade_compliance
+        unique: false
+      totalRepairValueImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.totalRepairValueImport
+        category: trade_compliance
+        unique: false
+      totalValueExport:
+        data_type: string
+        description: Subtotal+Insurance+Freight Charges. Total export value of shipment
+          (stored as string with commas, convert to number for calculations)
+        sample_values:
+        - 18,750.95
+        unique: false
+        nested_path: headers.general.totalValueExport
+        category: monetary
+        numeric_string: true
+      totalValueImport:
+        data_type: string
+        description: Subtotal+Insurance+Freight Charges. Total import value of shipment
+          (stored as string with commas, convert to number for calculations)
+        sample_values:
+        - 16,234.80
+        unique: false
+        nested_path: headers.general.totalValueImport
+        category: monetary
+        numeric_string: true
+      totalofLineTotalsExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.totalofLineTotalsExport
+        category: trade_compliance
+        unique: false
+      totalofLineTotalsImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.totalofLineTotalsImport
+        category: trade_compliance
+        unique: false
+      trxLeg2Callback:
+        data_type: string
+        description: C3 to send this rest service url for leg2 callback . if this
+          is blank. use the property file value
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.trxLeg2Callback
+        category: general
+      trxUserGroup:
+        data_type: string
+        description: ''
+        nested_path: headers.general.trxUserGroup
+        category: general
+        unique: false
+        sample_values:
+        - RYDER,FHL
+      ucExport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport
+        category: trade_compliance
+        unique: false
+      ucExportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportAddressLine1
+        category: trade_compliance
+        unique: false
+      ucExportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportAddressLine2
+        category: trade_compliance
+        unique: false
+      ucExportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportAddressLine3
+        category: trade_compliance
+        unique: false
+      ucExportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportAddressLine4
+        category: trade_compliance
+        unique: false
+      ucExportAddressType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportAddressType
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - EUS
+      ucExportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportCity
+        category: trade_compliance
+        unique: false
+      ucExportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportCompanyName
+        category: trade_compliance
+        unique: false
+      ucExportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportContactEmail
+        category: trade_compliance
+        unique: false
+      ucExportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      ucExportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportContactName
+        category: trade_compliance
+        unique: false
+      ucExportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportContactNumber
+        category: trade_compliance
+        unique: false
+      ucExportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportCountry
+        category: trade_compliance
+        unique: false
+      ucExportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportCountryCode
+        category: trade_compliance
+        unique: false
+      ucExportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportState
+        category: trade_compliance
+        unique: false
+      ucExportTaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportTaxID
+        category: trade_compliance
+        unique: false
+      ucExportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucExport.ucExportZip
+        category: trade_compliance
+        unique: false
+      ucImport:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport
+        category: trade_compliance
+        unique: false
+      ucImportAddressLine1:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportAddressLine1
+        category: trade_compliance
+        unique: false
+      ucImportAddressLine2:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportAddressLine2
+        category: trade_compliance
+        unique: false
+      ucImportAddressLine3:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportAddressLine3
+        category: trade_compliance
+        unique: false
+      ucImportAddressLine4:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportAddressLine4
+        category: trade_compliance
+        unique: false
+      ucImportAddressType:
+        data_type: string
+        description: RESELLER , GOVERNMENT ENTITY, DIRECT ,CONSUMER, OTHER
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.ucImport.ucImportAddressType
+        category: address
+      ucImportCity:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportCity
+        category: trade_compliance
+        unique: false
+      ucImportCompanyName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportCompanyName
+        category: trade_compliance
+        unique: false
+      ucImportContactEmail:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportContactEmail
+        category: trade_compliance
+        unique: false
+      ucImportContactFaxNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportContactFaxNumber
+        category: trade_compliance
+        unique: false
+      ucImportContactName:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportContactName
+        category: trade_compliance
+        unique: false
+      ucImportContactNumber:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportContactNumber
+        category: trade_compliance
+        unique: false
+      ucImportCountry:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportCountry
+        category: trade_compliance
+        unique: false
+      ucImportCountryCode:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportCountryCode
+        category: trade_compliance
+        unique: false
+      ucImportState:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportState
+        category: trade_compliance
+        unique: false
+      ucImportZip:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImportZip
+        category: trade_compliance
+        unique: false
+      ucImporttaxID:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucImport.ucImporttaxID
+        category: trade_compliance
+        unique: false
+      ucType:
+        data_type: string
+        description: ''
+        nested_path: headers.sli.ucType
+        category: general
+        unique: false
+        sample_values:
+        - RESELLER
+      vendorOrderNumber:
+        data_type: string
+        description: not used. future purpose. reference order number outside cisco
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.vendorOrderNumber
+        category: general
+      vtValueExport:
+        data_type: string
+        description: VT value derived by C3. used for all calculations in Edit ui.
+          Not used for printing purposes
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.vtValueExport
+        category: monetary
+      vtValueImport:
+        data_type: string
+        description: VT value derived by C3. used for all calculations in Edit ui.
+          Not used for printing purposes
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.vtValueImport
+        category: monetary
+      waybillNumber:
+        data_type: string
+        description: AWB, BillofLading
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: headers.general.waybillNumber
+        category: general
+      ciExport:
+        data_type: string
+        description: ''
+        nested_path: lines.ciExport
+        category: trade_compliance
+        unique: false
+      general:
+        data_type: string
+        description: ''
+        nested_path: lines.general
+        category: general
+        unique: false
+      additionalHeaderAttribute1:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute1
+        category: location
+        unique: false
+      additionalHeaderAttribute10:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute10
+        category: location
+        unique: false
+      additionalHeaderAttribute2:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute2
+        category: location
+        unique: false
+      additionalHeaderAttribute3:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute3
+        category: location
+        unique: false
+      additionalHeaderAttribute4:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute4
+        category: location
+        unique: false
+      additionalHeaderAttribute5:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute5
+        category: location
+        unique: false
+      additionalHeaderAttribute6:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute6
+        category: location
+        unique: false
+      additionalHeaderAttribute7:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute7
+        category: location
+        unique: false
+      additionalHeaderAttribute8:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute8
+        category: location
+        unique: false
+      additionalHeaderAttribute9:
+        data_type: string
+        description: ''
+        nested_path: headers.general.statementsAndLabels.additionalHeaderAttribute9
+        category: location
+        unique: false
+      pl:
+        data_type: string
+        description: ''
+        nested_path: lines.pl
+        category: general
+        unique: false
+      sli:
+        data_type: string
+        description: ''
+        nested_path: lines.sli
+        category: general
+        unique: false
+      lines:
+        data_type: string
+        description: ''
+        nested_path: lines
+        category: general
+        unique: false
+      HTSDescriptionExport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.HTSDescriptionExport
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - SWITCHING AND ROUTING APPARATUS, NESOI
+      HTSDescriptionImport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.HTSDescriptionImport
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - Local Area Network (LAN equipment
+      HTSDescriptionTranslatedExport:
+        data_type: string
+        description: DTS-D lookup to handle this
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.HTSDescriptionTranslatedExport
+        category: trade_compliance
+      HTSDescriptionTranslatedImport:
+        data_type: string
+        description: DTS-D lookup to handle this
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.HTSDescriptionTranslatedImport
+        category: trade_compliance
+      additionalLineAttribute1:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute1
+        category: general
+        unique: false
+      additionalLineAttribute10:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute10
+        category: general
+        unique: false
+      additionalLineAttribute2:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute2
+        category: general
+        unique: false
+      additionalLineAttribute3:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute3
+        category: general
+        unique: false
+      additionalLineAttribute4:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute4
+        category: general
+        unique: false
+      additionalLineAttribute5:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute5
+        category: general
+        unique: false
+      additionalLineAttribute6:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute6
+        category: general
+        unique: false
+      additionalLineAttribute7:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute7
+        category: general
+        unique: false
+      additionalLineAttribute8:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute8
+        category: general
+        unique: false
+      additionalLineAttribute9:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.additionalLineAttribute9
+        category: general
+        unique: false
+      btiNumber:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.btiNumber
+        category: document
+        unique: false
+      countryOfOrigin:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.countryOfOrigin
+        category: location
+        unique: false
+        sample_values:
+        - CN
+      eccn:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.eccn
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 5A991.c
+      eccnCountry:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.eccnCountry
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - US
+      exportHTS:
+        data_type: string
+        description: If user specifies importHTS or exportHTS use only that field.
+          If both are blank, use exportHTS for both import and export
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.exportHTS
+        category: trade_compliance
+      exportHTSCountry:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.exportHTSCountry
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - US
+      exportLicenseExpDate:
+        data_type: Date
+        description: Will be updated in DTS-D and sent in Leg2
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.exportLicenseExpDate
+        category: trade_compliance
+      exportLicenseNumber:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.exportLicenseNumber
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - NLR
+      htsUomExport:
+        data_type: string
+        description: added 7/24/2024
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.htsUomExport
+        category: trade_compliance
+      htsUomImport:
+        data_type: string
+        description: added 7/24/2024
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.htsUomImport
+        category: trade_compliance
+      importHTS:
+        data_type: string
+        description: If user specifies importHTS or exportHTS use only that field.
+          If both are blank, use exportHTS for both import and export
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.importHTS
+        category: trade_compliance
+      importHTSCountry:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.importHTSCountry
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - MX
+      importLicenseExpDate:
+        data_type: Date
+        description: Will be updated in DTS-D and sent in Leg2
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.importLicenseExpDate
+        category: temporal
+      importLicenseNumber:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.importLicenseNumber
+        category: trade_compliance
+        unique: false
+      itemDescription:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.itemDescription
+        category: product
+        unique: false
+        sample_values:
+        - Catalyst 1300 24-port GE, 4x10G SFP+
+      lbDefMfgYear:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lbDefMfgYear
+        category: general
+        unique: false
+      lineDocumentStatus:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineDocumentStatus
+        category: document
+        unique: false
+      lineNo:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineNo
+        category: general
+        unique: false
+        sample_values:
+        - 1
+      lineRepairValueExport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineRepairValueExport
+        category: trade_compliance
+        unique: false
+      lineRepairValueExportCurrency:
+        data_type: string
+        description: USD
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.lineRepairValueExportCurrency
+        category: monetary
+      lineRepairValueImport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineRepairValueImport
+        category: trade_compliance
+        unique: false
+      lineRepairValueImportCurrency:
+        data_type: string
+        description: USD
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.lineRepairValueImportCurrency
+        category: monetary
+      lineTotalRepairValueExport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalRepairValueExport
+        category: trade_compliance
+        unique: false
+      lineTotalRepairValueImport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalRepairValueImport
+        category: trade_compliance
+        unique: false
+      lineTotalValueExport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalValueExport
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 311.78
+      lineTotalValueExportCurrency:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalValueExportCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      lineTotalValueImport:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalValueImport
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - 311.78 (USD
+      lineTotalValueImportCurrency:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.lineTotalValueImportCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      majorLineReference:
+        data_type: string
+        description: Added for future purposes (if this is null, then it is a major
+          line)
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.majorLineReference
+        category: general
+      manufacturedYear:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.manufacturedYear
+        category: general
+        unique: false
+        sample_values:
+        - 05/2023
+      manufacturerAddress:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.manufacturerAddress
+        category: location
+        unique: false
+        sample_values:
+        - Delta Industrial Estate, Delta plant3,, Shijie Town, DONGGUAN, GUANGDONG,
+          China 523308
+      manufacturerID:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.manufacturerID
+        category: document
+        unique: false
+        sample_values:
+        - DELTA ELECTRONICS (DONGGUAN CO., LTD.
+      modelNo:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.modelNo
+        category: product
+        unique: false
+        sample_values:
+        - C1300-24T-4X
+      originalImportValue:
+        data_type: string
+        description: augmented in GTMD, leg1 null
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.originalImportValue
+        category: monetary
+      originalImportValueCurrency:
+        data_type: string
+        description: augmented in GTMD, leg1 null
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.originalImportValueCurrency
+        category: monetary
+      originalOrderReference:
+        data_type: string
+        description: Added for future purposes
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.originalOrderReference
+        category: general
+      partNumber:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.partNumber
+        category: product
+        unique: false
+        sample_values:
+        - C1300-24T-4X
+      productCondition:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.productCondition
+        category: product
+        unique: false
+        sample_values:
+        - N
+      productConditionMeaning:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.productConditionMeaning
+        category: product
+        unique: false
+      refurbLicenseNumber:
+        data_type: string
+        description: Will be updated in DTS-D and sent in Leg2
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.refurbLicenseNumber
+        category: general
+      refurbishedFlag:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.refurbishedFlag
+        category: general
+        unique: false
+      serialNo:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.serialNo
+        category: product
+        unique: false
+        sample_values:
+        - DNI29200CG4
+      shipQuantity:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.shipQuantity
+        category: logistics
+        unique: false
+        sample_values:
+        - 1
+      shipQuantityToPrint:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.shipQuantityToPrint
+        category: logistics
+        unique: false
+        sample_values:
+        - 1
+      totalGrossWeightKGS:
+        data_type: string
+        description: added 7/24/2024
+        sample_values:
+        - 100
+        unique: false
+        nested_path: lines.general.totalGrossWeightKGS
+        category: measurement
+      totalNetWeightKGS:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.totalNetWeightKGS
+        category: logistics
+        unique: false
+        sample_values:
+        - 4.37
+      totalOriginalImportValue:
+        data_type: string
+        description: augmented in GTMD, leg1 null
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.totalOriginalImportValue
+        category: monetary
+      translatedItemDescription:
+        data_type: string
+        description: DTS-D lookup to handle this
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: lines.general.translatedItemDescription
+        category: line_item
+      unitValueExport:
+        data_type: string
+        description: Unit export value (stored as string with commas)
+        sample_values:
+        - 1,250.75
+        unique: false
+        nested_path: lines.general.unitValueExport
+        category: monetary
+      unitValueExportCurrency:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.unitValueExportCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      unitValueImport:
+        data_type: string
+        description: Unit import value (stored as string with commas)
+        sample_values:
+        - 1,034.50
+        unique: false
+        nested_path: lines.general.unitValueImport
+        category: monetary
+      unitValueImportCurrency:
+        data_type: string
+        description: ''
+        nested_path: lines.sli.unitValueImportCurrency
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - USD
+      _id:
+        data_type: string
+        description: ''
+        nested_path: _id
+        category: document
+        unique: false
+        sample_values:
+        - ObjectId_685d726c1c1426388e64b3b5
+      documents:
+        data_type: string
+        description: ''
+        nested_path: documents
+        category: document
+        unique: false
+      CI-SL-B:
+        data_type: string
+        description: ''
+        nested_path: documents.CI-SL-B
+        category: document
+        unique: false
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=CI-SL/2025/06/26/SERVICES-CSFPRD16586373800-1658637380
+      CIEXPORT-SL-B:
+        data_type: string
+        description: ''
+        nested_path: documents.CIEXPORT-SL-B
+        category: trade_compliance
+        unique: false
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=CIEXPORT-SL/2025/06/26/SERVICES-CSFPRD16586373800-1658
+      PL-SL-EN:
+        data_type: string
+        description: ''
+        nested_path: documents.PL-SL-EN
+        category: document
+        unique: false
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=PL-SL/2025/06/26/SERVICES-CSFPRD16586373800-1658637380
+      SLI-SL-EN:
+        data_type: string
+        description: ''
+        nested_path: documents.SLI-SL-EN
+        category: document
+        unique: false
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=SLI-SL/2025/06/26/SERVICES-CSFPRD16586373800-165863738
+      holds:
+        data_type: string
+        description: ''
+        nested_path: holds
+        category: general
+        unique: false
+      context:
+        data_type: string
+        description: ''
+        nested_path: holds.context
+        category: general
+        unique: false
+        sample_values:
+        - LINES
+      createDate:
+        data_type: string
+        description: ''
+        nested_path: holds.createDate
+        category: document
+        unique: false
+        sample_values:
+        - 2025-06-26 09:16:42+00:00
+      createdBy:
+        data_type: string
+        description: ''
+        nested_path: holds.createdBy
+        category: general
+        unique: false
+        sample_values:
+        - SYSTEM
+      holdCode:
+        data_type: string
+        description: ''
+        nested_path: holds.holdCode
+        category: general
+        unique: false
+        sample_values:
+        - HOLD_REPAIRVALUE_IMPORT
+      lineNumber:
+        data_type: string
+        description: ''
+        nested_path: holds.lineNumber
+        category: document
+        unique: false
+        sample_values:
+        - 1
+      statusCode:
+        data_type: string
+        description: ''
+        nested_path: holds.statusCode
+        category: document
+        unique: false
+        sample_values:
+        - OPEN
+      CI:
+        data_type: string
+        description: Commercial Invoice document link
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=CI-SL/2025/06/26/SERVICES-CSFPRD16586373800-1658637380
+        unique: false
+        nested_path: documents.CI-SL-B
+        category: document
+      PL:
+        data_type: string
+        description: Packing List document link
+        sample_values:
+        - http://gtm-dgen-stg:8080/rmdocs/download?path=PL-SL/2025/06/26/SERVICES-CSFPRD16586373800-1658637380
+        unique: false
+        nested_path: documents.PL-SL-EN
+        category: document
+      STANDARD:
+        data_type: string
+        description: STANDARD
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: ''
+        category: general
+      description:
+        data_type: string
+        description: Sum monetary values stored as strings with comma formatting
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: ''
+        category: general
+      example:
+        data_type: string
+        description: 'db.SLShippingDocuments.aggregate([{{"$group": {{"_id": "$headers.general.orderType",
+          "count": {{"$sum": 1}}}}, {{"$sort": {{"count": -1}}}}])'
+        sample_values:
+        - sample_value
+        unique: false
+        nested_path: ''
+        category: general
+    document_count: 8495
+    nested_fields:
+      headers:
+        description: Document header information including general details, seller
+          info, ship-to details, and bill-to information for supply chain logistics
+        type: object
+        nested_fields:
+          general:
+            description: General document metadata
+            type: object
+          pl:
+            description: Packing list specific headers
+            type: object
+          ci:
+            description: Commercial invoice specific headers
+            type: object
+          sli:
+            description: Shipping instruction specific headers
+            type: object
+      lines:
+        description: Line item details including part numbers, descriptions, quantities,
+          and pricing for supply chain logistics
+        type: object
+        nested_fields:
+          pl:
+            description: Packing list line items
+            type: array
+          ci:
+            description: Commercial invoice line items
+            type: array
+          sli:
+            description: Shipping instruction line items
+            type: array
+      documents:
+        description: Document links and references for CI, PL, and SLI documents in
+          supply chain logistics
+        type: object
+
+# Root-level sections moved from nested collection structure for template compliance
+sample_queries:
+  - description: "Find all SCL shipping documents for delivery ID '111125802'"
+  - description: "Get commercial invoice details for supply chain logistics orders with specific part numbers"
+  - description: "Find all shipments going to a specific country with export control restrictions in SCL"
+  - description: "Get carton details including weights and dimensions for SCL packing lists"
+  - description: "Find all documents with specific ECCN codes for SCL export compliance"
+  - description: "Get billing information for specific customer accounts in supply chain logistics"
+  - description: "Find all shipments with hazardous materials in SCL process"
+  - description: "Get pricing information for commercial invoices in supply chain logistics"
+  - description: "Find all documents generated within a date range for SCL flow"
+  - description: "Get ship-to address details for specific SCL regions"
+  - description: "Find supplier details for supply chain logistics tracking"
+  - description: "Get freight and shipping method information for SCL"
+
+verified_queries:
+  - name: "FindDocumentsByDateRange"
+    question: "Find documents by date range in SCL flow"
+    mongodb_query: 'db.SLShippingDocuments.find({"headers.general.documentDate":{$gte: ISODate("2020-01-01"),$lte: ISODate("2020-12-31")}})'
+  - name: "FindCIandPLDocumentLinks"
+    question: "What is the CI and PL document links for delivery id '162167843'?"
+    mongodb_query: 'db.SLShippingDocuments.aggregate([{"$match":{"headers.general.deliveryId":"162167843"}},{"$project":{"_id":0,"CI-LINK":"$documents.CI-SL-B","PL-LINK":"$documents.PL-SL-EN"}}])'
+  - name: "DayWiseShipmentVolume"
+    question: "What is the daywise shipment volume for USA to INDIA in last 20 days?"
+    mongodb_query: 'db.SLShippingDocuments.aggregate([{"$match":{"headers.general.shipFromCountryCode":"US","headers.general.shipToCountryCode":"IN","headers.general.shipDate":{"$gte":ISODate("2025-10-11"),"$lte":ISODate("2025-10-31")}}},{"$group":{"_id":{"$dateToString":{"format":"%Y-%m-%d","date":"$headers.general.shipDate"}},"dailyVolume":{"$sum":1}}},{"$sort":{"_id":1}}])'
+  - name: "TopCountriesOnHold"
+    question: "Shipments from which countries are often going on hold and what are the top 5 countries?"
+    mongodb_query: 'db.SLShippingDocuments.aggregate([{"$match":{"headers.general.documentStatus":"HOLD"}},{"$group":{"_id":"$headers.general.shipFromCountryCode","count":{"$sum":1}}},{"$sort":{"count":-1}},{"$limit":5}])'
+  - name: "TotalShipmentValueToUSLastMonth"
+    question: "Give me total shipment value for all the shipments shipped to US in last month?"
+    mongodb_query: 'db.SLShippingDocuments.aggregate([{"$match":{"headers.general.shipToCountryCode":"US","headers.general.shipDate":{"$gte":ISODate("2025-10-01"),"$lte":ISODate("2025-10-31")}}},{"$group":{"_id":null,"totalShipmentValue":{"$sum":{"$convert":{"input":{"$replaceAll":{"input":"$headers.general.totalValueImport","find":",","replacement":""}},"to":"double","onError":0,"onNull":0}}}}},{"$project":{"_id":0,"totalShipmentValue":1}}])'
+  - name: "TotalShipmentValueUSToChina"
+    question: "Give me the total value for shipment shipping out of US to China in last quarter"
+    mongodb_query: 'db.SLShippingDocuments.aggregate([{"$match":{"headers.general.shipFromCountryCode":"US","headers.general.shipToCountryCode":"CN","headers.general.shipDate":{"$gte":ISODate("2025-07-01"),"$lte":ISODate("2025-09-30")}}},{"$group":{"_id":null,"totalShipmentValue":{"$sum":{"$convert":{"input":{"$replaceAll":{"input":"$headers.general.totalValueImport","find":",","replacement":""}},"to":"double","onError":0,"onNull":0}}}}},{"$sort":{"totalShipmentValue":-1}},{"$project":{"_id":0,"totalShipmentValue":1}},{"$limit":1}])'
+  - name: "FindShippingDetailsByDeliveryId"
+    question: "Find Shipping details for the deliveryId 'iesTest'?"
+    mongodb_query: 'db.SLShippingDocuments.find({"$or":[{"headers.general.deliveryId":"iesTest"},{"headers.ci.deliveryId":"iesTest"},{"headers.sli.deliveryId":"iesTest"},{"headers.pl.deliveryId":"iesTest"}]}).sort({"headers.general.lastUpdateDate":-1}).limit(1)'
+
+custom_instructions: |
+    - '🔥 SLSHIPPINGDOCUMENTS FIELD STRUCTURE NOTE:'
+    - '📌 Field names like orderType, companyName, shipDate, trxUserGroup, partNumber, businessEntity, etc. are individual SEPARATE fields in this collection, NOT nested objects.'
+    - '✅ CORRECT: {"orderType": "value"}, {"trxUserGroup": "value"}, {"partNumber": "value"}'
+    - '❌ WRONG: {"orderType.value": "value"} - This creates unknown operator errors!'
+    - '💡 Always check: Is this actually a nested structure (like headers.general.field) or a separate field? When in doubt, treat as SEPARATE field.'
+    - ''
+    - '⚠️⚠️⚠️ RULE #0: DATE FIELD SELECTION (CRITICAL) ⚠️⚠️⚠️'
+    - '📅 TWO DATE FIELDS exist in headers.general:'
+    - '  - documentDate: Date the DOCUMENT was created (use for document lifecycle queries)'
+    - '  - shipDate: Date of ACTUAL SHIPMENT (use for shipment volume/performance analysis)'
+    - '🎯 DECISION RULE:'
+    - '  ✅ USE shipDate WHEN: analyzing shipment patterns, shipment volume, shipment performance, delivery timeline, shipment-related metrics'
+    - '  ✅ USE documentDate WHEN: filtering by document creation date, document processing date'
+    - '❌ NEVER confuse these fields - using wrong date gives incorrect business insights'
+    - '📝 Example: Question "Shipments from US to IN in year 2025" → USE shipDate, NOT documentDate'
+    - ''
+    - '⚠️⚠️⚠️ RULE #1: COUNTRY CODE CONVERSION ⚠️⚠️⚠️'
+    - '🚨 MANDATORY: Convert country names to 2-letter ISO codes in ALL queries'
+    - '� USA/America/United States → US | INDIA/India → IN | CHINA/China → CN | CHILE/Chile → CL'
+    - '✅ ALWAYS USE ISO codes in shipFromCountryCode and shipToCountryCode fields'
+    - '❌ NEVER USE full country names (USA, INDIA, AMERICA, UNITED STATES)'
+    - '📝 Example: "headers.general.shipFromCountryCode": "US" (NOT "USA")'
+    
+    - '⚠️⚠️⚠️ RULE #2: WHEN TO USE $unwind ⚠️⚠️⚠️'
+    - '🚨 CRITICAL: lines.general, lines.ci, lines.sli, lines.pl are ARRAYS - ALWAYS $unwind before accessing line-level fields!'
+    - '✅ USE $unwind when:'
+    - '   • Counting/summing individual line items (e.g., total unit price, line count)'
+    - '   • Filtering by line-level fields (partNumber, ECCN, itemDescription)'
+    - '   • Aggregating line-level monetary fields (unitValueExport, lineTotalValue*)'
+    - '   • Accessing any field under lines.general.*, lines.ci.*, lines.sli.*, lines.pl.*'
+    - '❌ DO NOT use $unwind when:'
+    - '   • Working ONLY with header-level fields (headers.general.*)'
+    - '   • Document-level grouping (by country/status/date)'
+    - '   • Querying document links (documents.*)'
+    - '📊 Pattern: Header query = NO $unwind | Line item query = $unwind REQUIRED'
+    - '⚠️ Common error: Forgetting $unwind causes "$replaceAll requires input be string, found: array" errors'
+    - '✅ Example (no $unwind): [{"$match": {"headers.general.documentStatus": "HOLD"}}, {"$group": {"_id": "$headers.general.shipFromCountryCode"}}]'
+    - '✅ Example (with $unwind): [{"$match": {...}}, {"$unwind": "$lines.general"}, {"$match": {"lines.general.partNumber": "X"}}, {"$group": {...}}]'
+    
+    - '⚠️⚠️⚠️ RULE #3: AGGREGATION QUERIES - USE $group FOR TOTALS ⚠️⚠️⚠️'
+    - '✅ USE $group with $sum when question asks for: total, sum, aggregate, overall, combined, cumulative, extended'
+    - '❌ DO NOT use $group for: details, list, show each, individual items'
+    - ''
+    - '🚨 COPY THIS EXACT PIPELINE STRUCTURE - DO NOT MODIFY:'
+    - '   [{"$match":{...}},{"$group":{"_id":null,"insuranceImport":{"$sum":{"$convert":{"input":{"$replaceAll":{"input":"$headers.general.insuranceImport","find":",","replacement":""}},"to":"double","onError":0,"onNull":0}}},"insuranceExport":{"$sum":{"$convert":{"input":{"$replaceAll":{"input":"$headers.general.insuranceExport","find":",","replacement":""}},"to":"double","onError":0,"onNull":0}}}}},{"$project":{"_id":0,"insuranceImport":1,"insuranceExport":1}}]'
+    - ''
+    - '🛑 CRITICAL BRACE COUNTING FOR $group STAGE:'
+    - '   • After FIRST field ends with: ..."onNull":0}}},'
+    - '     That is 3 braces: }=close $convert, }=close $sum, }=close field'
+    - '   • After LAST field ends with: ..."onNull":0}}}},'
+    - '     That is 4 braces: }=close $convert, }=close $sum, }=close field, }=close $group object'
+    - '   • The comma after last field closes the pipeline stage, NOT another brace!'
+    - ''
+    - '❌ COMMON ERROR: Adding extra } after $group object:'
+    - '   WRONG: {"$group":{...}}}},{"$project":...}  ← Extra } before comma!'
+    - '   RIGHT: {"$group":{...}}},{"$project":...}  ← Correct!'
+    - ''
+    - '💡 PIPELINE STAGE STRUCTURE: Each stage is ONE object in array'
+    - '   [{"$match":{...}}, {"$group":{...}}, {"$project":{...}}]'
+    - '   NOT: [{"$match":{...}}, {"$group":{...}}}, {"$project":{...}}]  ← Extra }!'
+    
+    - '🎯 HTS CODE FIELDS - CRITICAL MAPPING:'
+    - '✅ Import HTS: use "lines.general.importHTS" | Export HTS: use "lines.general.exportHTS"'
+    - '❌ NEVER use "headers.general.importHTS" or "headers.general.exportHTS"'
+    - '🔍 General HTS search: {"$or": [{"lines.general.importHTS": "code"}, {"lines.general.exportHTS": "code"}]}'
+    
+    - '⚠️ IMPORTANT DATA TYPE NOTE: Weight and monetary fields (shipmentGrossWeightKGS, shipmentNetWeightKGS, chargableWeightKGS, freightCharges*, totalValue*, subTotalValue*) are stored as STRINGS in the database but contain numeric values. ALWAYS use $convert with $replaceAll to remove commas before converting to double.'
+    - '🔧 CONVERSION PATTERN: Use {"$convert": {"input": {"$replaceAll": {"input": "$field", "find": ",", "replacement": ""}}, "to": "double", "onError": 0, "onNull": 0}} for all numeric_string fields'
+    
+    - '⚠️⚠️⚠️ RULE #4: MULTI-PATH FIELD QUERYING (CRITICAL) ⚠️⚠️⚠️'
+    - '🚨 CRITICAL: Some fields exist at MULTIPLE nested paths because documents have separate sections for different document types (CI/SLI/PL)'
+    - '📋 MULTI-PATH FIELDS IN HEADERS (require $or operator for complete data retrieval):'
+    - '   • trxUserGroup: headers.general.trxUserGroup, headers.ci.trxUserGroup, headers.sli.trxUserGroup, headers.pl.trxUserGroup'
+    - '   • deliveryId: headers.general.deliveryId, headers.ci.deliveryId, headers.sli.deliveryId, headers.pl.deliveryId'
+    - '   • orderNumber: headers.general.orderNumber, headers.ci.orderNumber, headers.sli.orderNumber, headers.pl.orderNumber'
+    - '   • orderType: headers.general.orderType, headers.ci.orderType, headers.sli.orderType, headers.pl.orderType'
+    - '   • shipDate: headers.general.shipDate, headers.ci.shipDate, headers.sli.shipDate, headers.pl.shipDate'
+    - '   • documentDate: headers.general.documentDate, headers.ci.documentDate, headers.sli.documentDate, headers.pl.documentDate'
+    - ''
+    - '📋 MULTI-PATH FIELDS IN LINES (require $or operator for complete data retrieval):'
+    - '   • partNumber: lines.general.partNumber, lines.ci.partNumber, lines.sli.partNumber, lines.pl.partNumber'
+    - '   • itemDescription: lines.general.itemDescription, lines.ci.itemDescription, lines.sli.itemDescription, lines.pl.itemDescription'
+    - '   • serialNo: lines.general.serialNo, lines.ci.serialNo, lines.sli.serialNo, lines.pl.serialNo'
+    - '   • countryOfOrigin: lines.general.countryOfOrigin, lines.ci.countryOfOrigin, lines.sli.countryOfOrigin, lines.pl.countryOfOrigin'
+    - ''
+    - '✅ CORRECT MULTI-PATH FILTER - Search field across ALL document sections using $or:'
+    - '   db.SLShippingDocuments.find({'
+    - '     "$or": ['
+    - '       {"headers.general.trxUserGroup": "RYDER,FHL"},'
+    - '       {"headers.ci.trxUserGroup": "RYDER,FHL"},'
+    - '       {"headers.sli.trxUserGroup": "RYDER,FHL"},'
+    - '       {"headers.pl.trxUserGroup": "RYDER,FHL"}'
+    - '     ]'
+    - '   })'
+    - ''
+    - '✅ CORRECT MULTI-PATH PROJECTION - Include ALL possible paths to capture complete data:'
+    - '   db.SLShippingDocuments.find('
+    - '     {"headers.general.deliveryId": "TST165872888129"},'
+    - '     {'
+    - '       "headers.general.trxUserGroup": 1,'
+    - '       "headers.ci.trxUserGroup": 1,'
+    - '       "headers.sli.trxUserGroup": 1,'
+    - '       "headers.pl.trxUserGroup": 1'
+    - '     }'
+    - '   )'
+    - ''
+    - '✅ CORRECT MULTI-PATH LINE ITEM QUERY - Search partNumber across all line sections:'
+    - '   db.SLShippingDocuments.find({'
+    - '     "$or": ['
+    - '       {"lines.general.partNumber": "A9K-VSM-500="},'
+    - '       {"lines.ci.partNumber": "A9K-VSM-500="},'
+    - '       {"lines.sli.partNumber": "A9K-VSM-500="},'
+    - '       {"lines.pl.partNumber": "A9K-VSM-500="}'
+    - '     ]'
+    - '   })'
+    - ''
+    - '❌ WRONG - Querying only ONE path returns INCOMPLETE data (misses 75% of documents):'
+    - '   db.SLShippingDocuments.find({"headers.general.trxUserGroup": "RYDER,FHL"})'
+    - '   // PROBLEM: Only finds documents where field exists in general section!'
+    - '   // MISSING: Data in ci/sli/pl sections will NOT be returned!'
+    - ''
+    - '❌ WRONG - Single-path projection returns INCOMPLETE field data:'
+    - '   db.SLShippingDocuments.find({...}, {"headers.general.trxUserGroup": 1})'
+    - '   // PROBLEM: Only shows trxUserGroup from general section!'
+    - '   // MISSING: trxUserGroup values in ci/sli/pl sections will be null/missing!'
+    - ''
+    - '🎯 WHY THIS MATTERS:'
+    - '   • Documents contain separate sections: general (master data), ci (commercial invoice), sli (shipping instruction), pl (packing list)'
+    - '   • Same field appears in multiple sections with potentially different values or formatting'
+    - '   • Single-path queries miss data stored in other sections'
+    - '   • For complete data retrieval, ALWAYS query ALL relevant paths'
+    - ''
+    - '📝 DECISION RULE:'
+    - '   ✅ IF querying multi-path field → ALWAYS use $or across ALL paths (general, ci, sli, pl)'
+    - '   ✅ IF projecting multi-path field → ALWAYS include ALL paths in projection'
+    - '   ✅ IF field only exists in ONE section (e.g., headers.general.businessEntity) → Use single path'
+    
+    - Use nested field paths when querying complex supply chain logistics document structures
+    - Commercial invoices (ci), packing lists (pl), and shipping instructions (sli) have separate line item arrays
+    - Address information is nested under details objects (shipToDetails, billToDetails, supplierDetails, etc.)
+    - Export control fields like ECCN and HTS codes are critical for SCL trade compliance queries
+    - Carton details include both metric and imperial weight/dimension measurements
+    - Document links (CI-A, CI-C, CI-D, PL-EN, SLI-EN) reference external document files
+    - Supply chain logistics includes specialized fields for supplier tracking and freight management
+
+# ===========================================
+# QUERY PATTERNS - Field Selection Strategy
+# ===========================================
+query_patterns:
+    query_without_unwind: |
+      // ✅ CORRECT: Grouping by header fields - NO $unwind needed
+      // Question: "Shipments from which countries are often going on hold and what are the top 5 countries?"
+      db.SLShippingDocuments.aggregate([
+        {"$match": {"headers.general.documentStatus": "HOLD"}},
+        {"$group": {"_id": "$headers.general.shipFromCountryCode", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 5}
+      ])
+      
+    query_with_unwind_for_line_items: |
+      // ✅ CORRECT: Analyzing line-level fields - $unwind IS needed
+      // Question: "What are the most common part numbers in shipments to India?"
+      db.SLShippingDocuments.aggregate([
+        {"$match": {"headers.general.shipToCountryCode": "IN"}},
+        {"$unwind": "$lines.pl"},
+        {"$group": {"_id": "$lines.pl.partNumber", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+      ])
+      
+    incorrect_unnecessary_unwind: |
+      // ❌ WRONG: Adding $unwind when not needed - wastes resources
+      // Question: "Shipments from which countries are often going on hold?"
+      db.SLShippingDocuments.aggregate([
+        {"$unwind": "$lines.pl"},           // ❌ UNNECESSARY!
+        {"$unwind": "$lines.ci"},           // ❌ UNNECESSARY!
+        {"$match": {"headers.general.documentStatus": "HOLD"}},
+        {"$group": {"_id": "$headers.general.shipFromCountryCode", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 5}
+      ])
+      
+    incorrect_weight_query: |
+      // ❌ WRONG: This will fail because weights are stored as strings
+      db.SLShippingDocuments.aggregate([
+        {"$group": {
+          "_id": "$headers.general.shipToCountryCode",
+          "avgWeight": {"$avg": "$headers.general.shipmentGrossWeightKGS"}
+        }}
+      ])
+      
+    correct_weight_average: |
+      // ✅ CORRECT: Convert weight strings to numbers for calculations
+      db.SLShippingDocuments.aggregate([
+        {"$group": {
+          "_id": "$headers.general.shipToCountryCode",
+          "avgWeight": {
+            "$avg": {
+              "$convert": {
+                "input": {
+                  "$replaceAll": {
+                    "input": "$headers.general.shipmentGrossWeightKGS",
+                    "find": ",",
+                    "replacement": ""
+                  }
+                },
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          }
+        }}
+      ])
+      
+    correct_monetary_sum: |
+      // ✅ CORRECT: Sum monetary values with string-to-number conversion
+      db.SLShippingDocuments.aggregate([
+        {"$group": {
+          "_id": "$headers.general.shipFromCountryCode",
+          "totalFreight": {
+            "$sum": {
+              "$convert": {
+                "input": {
+                  "$replaceAll": {
+                    "input": "$headers.general.freightChargesExport",
+                    "find": ",",
+                    "replacement": ""
+                  }
+                },
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          }
+        }}
+      ])
+      
+    correct_weight_comparison: |
+      // ✅ CORRECT: Compare weights with proper conversion
+      db.SLShippingDocuments.find({
+        "$expr": {
+          "$gt": [
+            {
+              "$convert": {
+                "input": {
+                  "$replaceAll": {
+                    "input": "$headers.general.shipmentGrossWeightKGS",
+                    "find": ",",
+                    "replacement": ""
+                  }
+                },
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            },
+            50.0
+          ]
+        }
+      })
+      
+    correct_max_value: |
+      // ✅ CORRECT: Find maximum value with conversion
+      db.SLShippingDocuments.aggregate([
+        {"$group": {
+          "_id": null,
+          "maxTotalValue": {
+            "$max": {
+              "$convert": {
+                "input": {
+                  "$replaceAll": {
+                    "input": "$headers.general.totalValueImport",
+                    "find": ",",
+                    "replacement": ""
+                  }
+                },
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          }
+        }}
+      ])
+
+    correct_multipath_filter_trxusergroup: |
+      // ✅ CORRECT: Query multi-path field (trxUserGroup) across ALL sections
+      // Question: "What is the transactional userGroup assigned to delivery TST165872888129?"
+      db.SLShippingDocuments.find({
+        "$and": [
+          {
+            "$or": [
+              {"headers.general.deliveryId": "TST165872888129"},
+              {"headers.ci.deliveryId": "TST165872888129"},
+              {"headers.sli.deliveryId": "TST165872888129"},
+              {"headers.pl.deliveryId": "TST165872888129"}
+            ]
+          }
+        ]
+      }, {
+        "headers.general.trxUserGroup": 1,
+        "headers.ci.trxUserGroup": 1,
+        "headers.sli.trxUserGroup": 1,
+        "headers.pl.trxUserGroup": 1
+      })
+      
+    correct_multipath_filter_partnumber: |
+      // ✅ CORRECT: Find documents by partNumber across ALL line sections
+      // Question: "Find all shipments containing part number A9K-VSM-500="
+      db.SLShippingDocuments.find({
+        "$or": [
+          {"lines.general.partNumber": "A9K-VSM-500="},
+          {"lines.ci.partNumber": "A9K-VSM-500="},
+          {"lines.sli.partNumber": "A9K-VSM-500="},
+          {"lines.pl.partNumber": "A9K-VSM-500="}
+        ]
+      })
+      
+    correct_header_aggregation_two_fields: |
+      // ✅ CORRECT: Aggregate TWO fields from headers (FOLLOW THIS PATTERN EXACTLY!)
+      // Question: "Is there any insurance amount included in the deliveryId 'iesTest'?"
+      db.SLShippingDocuments.aggregate([
+        {"$match": {"headers.general.deliveryId": "iesTest"}},
+        {"$group": {
+          "_id": null,
+          "insuranceExport": {
+            "$sum": {
+              "$convert": {
+                "input": {"$replaceAll": {"input": "$headers.general.insuranceExport", "find": ",", "replacement": ""}},
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          },
+          "insuranceImport": {
+            "$sum": {
+              "$convert": {
+                "input": {"$replaceAll": {"input": "$headers.general.insuranceImport", "find": ",", "replacement": ""}},
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          }
+        }},
+        {"$project": {"_id": 0, "insuranceExport": 1, "insuranceImport": 1}}
+      ])
+      
+    correct_line_level_aggregation_with_unwind: |
+      // ✅ CORRECT: Sum line-level field with $unwind for array handling
+      // Question: "What is the extended unit price of item 'A9K-VSM-500=' in delivery TST165872888129?"
+      db.SLShippingDocuments.aggregate([
+        {"$match": {"headers.general.deliveryId": "TST165872888129"}},
+        {"$unwind": "$lines.general"},
+        {"$match": {
+          "$or": [
+            {"lines.general.partNumber": "A9K-VSM-500="},
+            {"lines.ci.partNumber": "A9K-VSM-500="},
+            {"lines.sli.partNumber": "A9K-VSM-500="},
+            {"lines.pl.partNumber": "A9K-VSM-500="}
+          ]
+        }},
+        {"$group": {
+          "_id": null,
+          "totalUnitPrice": {
+            "$sum": {
+              "$convert": {
+                "input": {"$replaceAll": {"input": "$lines.general.unitValueExport", "find": ",", "replacement": ""}},
+                "to": "double",
+                "onError": 0,
+                "onNull": 0
+              }
+            }
+          }
+        }},
+        {"$project": {"_id": 0, "totalUnitPrice": 1}}
+      ])
+      
+    incorrect_line_aggregation_without_unwind: |
+      // ❌ WRONG: Aggregating line-level fields WITHOUT $unwind
+      // Question: "What is the extended unit price of item 'A9K-VSM-500=' in delivery TST165872888129?"
+      db.SLShippingDocuments.aggregate([
+        {"$match": {"headers.general.deliveryId": "TST165872888129"}},
+        // ❌ MISSING $unwind! lines.general is an ARRAY
+        {"$group": {"_id": null, "total": {"$sum": {"$convert": {"input": {"$replaceAll": {"input": "$lines.general.unitValueExport", ...}}}}}}}
+      ])
+      // PROBLEM: $replaceAll fails with "requires that 'input' be a string, found: array"
+      // FIX: Add {"$unwind": "$lines.general"} BEFORE accessing line-level fields
+      
+    incorrect_single_path_query: |
+      // ❌ WRONG: Querying only ONE path for multi-path field
+      // Question: "What is the transactional userGroup assigned to delivery TST165872888129?"
+      db.SLShippingDocuments.find(
+        {"headers.general.deliveryId": "TST165872888129"},
+        {"headers.general.trxUserGroup": 1}
+      )
+      // PROBLEM: Only returns trxUserGroup from general section
+      // MISSING: Values in ci/sli/pl sections are NOT returned!
+      // RESULT: Incomplete data - field may appear as null/empty even when it exists in other sections
+      
+    incorrect_single_path_filter: |
+      // ❌ WRONG: Filtering by single path for multi-path field
+      // Question: "Find shipments with trxUserGroup RYDER,FHL"
+      db.SLShippingDocuments.find({
+        "headers.general.trxUserGroup": "RYDER,FHL"
+      })
+      // PROBLEM: Only finds documents where field exists in general section
+      // MISSING: Documents with trxUserGroup in ci/sli/pl sections are NOT returned!
+      // RESULT: Returns only 25% of matching documents
+
+mongodb_features:
+    - Complex nested aggregation for supply chain logistics line item analysis
+    - Multi-level object querying for address and supplier information
+    - Array operations for carton details and line items
+    - Text search capabilities for part numbers and supplier descriptions
+    - Date range queries for SCL document filtering
+    - Regex operations for export control classification
+    - Grouping operations for invoice totaling and SCL reporting
+    - Projection queries for specific field extraction
+    - Compound queries combining multiple criteria for SCL compliance
+    - Index optimization for frequently queried SCL fields
+    - Supplier-focused queries for supply chain analytics
+    - Freight and logistics aggregation pipelines for cost optimization
+

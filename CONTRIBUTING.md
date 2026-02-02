@@ -58,12 +58,74 @@ major version release.
 
 ### Testing
 
-- Write unit tests for new features
-- Ensure existing tests pass
-- Run tests locally before submitting PR
+We have a comprehensive test suite to ensure code quality and functionality. All contributions must include appropriate tests.
 
+#### Test Requirements
+
+Before submitting a pull request, ensure that:
+1. All existing tests pass
+2. New features include unit tests
+3. Code coverage remains above 80%
+4. Integration tests are added for new workflows
+
+#### Running Tests
+
+Install test dependencies:
 ```bash
-pytest tests/
+pip install -e ".[dev]"
+```
+
+Run all tests:
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=mongodb_agent --cov-report=html
+```
+
+Run specific test file:
+```bash
+pytest tests/test_agent.py
+```
+
+Run with verbose output:
+```bash
+pytest -v
+```
+
+Run only integration tests:
+```bash
+pytest -m integration
+```
+
+#### Test Structure
+
+Our test suite is organized as follows:
+- `tests/test_agent.py` - Core agent functionality tests
+- `tests/test_query_executor.py` - Query execution tests
+- `tests/test_router.py` - Routing logic tests
+- `tests/test_selector.py` - Semantic model selection tests
+- `tests/test_query_refiner.py` - Query refinement tests
+- `tests/test_output_parser.py` - Output parsing tests
+- `tests/test_integration.py` - End-to-end integration tests
+
+#### Writing Tests
+
+When writing tests:
+- Use fixtures from `tests/conftest.py` for common test objects
+- Mock external dependencies (MongoDB, LLM providers)
+- Test both success and error cases
+- Include docstrings explaining what each test validates
+- Follow the naming convention: `test_<functionality>_<scenario>()`
+
+Example:
+```python
+def test_query_executor_handles_timeout(mock_mongodb_client):
+    """Test that query executor handles timeout gracefully."""
+    # Test implementation
+    pass
 ```
 
 ## Other Ways to Contribute

@@ -12,9 +12,7 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-
-# Source code (private - not shared)
-mongodb_agent/
+*.whl
 
 # Logs
 *.log
@@ -42,5 +40,22 @@ ENV/
 *.tmp
 *.bak
 *.swp
+*.backup
 architecture copy.html
 .pypirc
+
+# Coverage reports
+.coverage
+htmlcov/
+coverage.xml
+
+# Demo/Presentation files
+DEMO_PRESENTATION.md
+DEMO_PRESENTATION.pptx
+USE_CASE_BENEFITS.md
+USE_CASE_BENEFITS.pptx
+
+# Customer-specific semantic models (add your own as needed)
+semantic_models/SCReg_CollectionInfo_V4.yaml
+semantic_models/SLShippingDocuments_semantic_model_convert_V4.yaml
+semantic_models/b2btransaction_semantic_model_template.yaml

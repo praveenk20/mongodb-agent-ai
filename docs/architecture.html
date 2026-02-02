@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture - MongoDB Agent AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 5px;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 5px 0;
+            font-size: 0.9em;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .diagram {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border: 2px solid #e0e0e0;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .component {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .next-steps a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .next-steps a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div><a href="index.html">← Back to Documentation Hub</a></div>
+        <div>MongoDB Agent AI - Architecture</div>
+    </div>
+
+    <div class="container">
+        <h1>🏗️ Architecture</h1>
+        <p>Understanding the internal architecture of MongoDB Agent AI.</p>
+
+        <h2 id="flow-diagrams">📊 High-Level Architecture</h2>
+        
+        <div style="text-align: center; margin: 30px 0;">
+            <img src="images/ArchitectureFlow_MongoDBAgent2.png" 
+                 alt="MongoDB Agent Architecture Flow" 
+                 style="max-width: 100%; height: auto; border: 1px solid #e0e0e0; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <p style="margin-top: 10px; color: #666; font-style: italic; font-size: 0.9em;">
+                Figure 1: MongoDB Agent AI Architecture Flow
+            </p>
+        </div>
+
+        <div class="diagram">
+            <h3>Architecture Components:</h3>
+            <pre><code>
+┌─────────────────────────────────────────────────────────────────┐
+│                        User Application                          │
+│                    (REST API Client / CLI)                       │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                            │ HTTP POST /api/mongodb
+                            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      FastAPI Server                              │
+│                   (mongodb_agent.api)                            │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │  Endpoint: /api/mongodb                                  │   │
+│  │  - Validates request                                     │   │
+│  │  - Loads .env configuration                              │   │
+│  │  - Invokes MongoDB Agent                                 │   │
+│  └─────────────────────────────────────────────────────────┘   │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    MongoDB Agent Core                            │
+│                   (LangGraph Workflow)                           │
+│                                                                   │
+│  ┌──────────────┐                                               │
+│  │   Ingress    │  Entry point - receives user question         │
+│  └──────┬───────┘                                               │
+│         │                                                        │
+│         ▼                                                        │
+│  ┌──────────────┐                                               │
+│  │   Selector   │  Loads semantic model & generates query       │
+│  │              │  • Retrieves schema from Local YAML/Weaviate  │
+│  │              │  • Uses LLM to create aggregation pipeline    │
+│  └──────┬───────┘                                               │
+│         │                                                        │
+│         ▼                                                        │
+│  ┌──────────────┐                                               │
+│  │    Query     │  Executes query via Direct or MCP             │
+│  │   Executor   │  • Handles connection routing                 │
+│  │              │  • Error handling and retries                 │
+│  └──────┬───────┘                                               │
+│         │                                                        │
+│         ▼                                                        │
+│  ┌──────────────┐                                               │
+│  │    Router    │  Determines if refinement needed              │
+│  │              │  ├─ Success → Output Parser                   │
+│  │              │  └─ Error → Query Refiner                     │
+│  └──────┬───────┘                                               │
+│         │                                                        │
+│         ├─────────────┐                                         │
+│         ▼             ▼                                         │
+│  ┌──────────────┐  ┌──────────────┐                            │
+│  │    Output    │  │    Query     │  Refines failed query      │
+│  │    Parser    │  │   Refiner    │  then loops back           │
+│  └──────────────┘  └──────────────┘                            │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │
+                            ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                   MongoDB Router                                 │
+│              (Connection Abstraction Layer)                      │
+│                                                                   │
+│   if MONGODB_CONNECTION_TYPE == "mcp":                           │
+│       ┌─────────────────────────────────────┐                   │
+│       │         MCP Client                   │                   │
+│       │  • OAuth token management            │                   │
+│       │  • HTTP requests to MCP server       │                   │
+│       │  • Token caching                     │                   │
+│       └─────────────┬───────────────────────┘                   │
+│                     │                                             │
+│                     ▼                                             │
+│       ┌─────────────────────────────────────┐                   │
+│       │      MCP Server (External)          │                   │
+│       │  • Receives HTTP requests            │                   │
+│       │  • Validates OAuth tokens            │                   │
+│       │  • Executes MongoDB queries          │                   │
+│       └─────────────┬───────────────────────┘                   │
+│                     │                                             │
+│   else if MONGODB_CONNECTION_TYPE == "direct":                   │
+│       ┌─────────────────────────────────────┐                   │
+│       │      Direct Client (PyMongo)        │                   │
+│       │  • Connection pooling                │                   │
+│       │  • Direct database queries           │                   │
+│       │  • Low latency (~10ms)               │                   │
+│       └─────────────┬───────────────────────┘                   │
+│                     │                                             │
+└─────────────────────┼─────────────────────────────────────────┘
+                      │
+                      ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                    MongoDB Database                              │
+│                   (Collections & Documents)                      │
+└─────────────────────────────────────────────────────────────────┘
+
+            Parallel Component: LLM Provider
+┌─────────────────────────────────────────────────────────────────┐
+│                      LLM Provider                                │
+│        (OpenAI / Anthropic / Azure OpenAI)                       │
+│  • Receives natural language question                            │
+│  • Generates MongoDB aggregation pipeline                        │
+│  • Returns structured JSON query                                 │
+└─────────────────────────────────────────────────────────────────┘
+            </code></pre>
+        </div>
+
+        <h2>🔄 Request Flow</h2>
+
+        <h3>1. User Request</h3>
+        <div class="component">
+            <p><strong>Input:</strong> Natural language question + collection name</p>
+            <pre><code>POST /api/mongodb
+{
+  "question": "How many orders were completed last month?",
+  "yaml_file_name": "orders_semantic_model.yaml"
+}</code></pre>
+        </div>
+
+        <h3>2. Selector Node (Query Generation)</h3>
+        <div class="component">
+            <p><strong>Responsibilities:</strong></p>
+            <ul>
+                <li>Parse user question</li>
+                <li>Load semantic model (if available)</li>
+                <li>Send prompt to LLM provider</li>
+                <li>Generate MongoDB aggregation pipeline</li>
+            </ul>
+            <p><strong>Output:</strong> JSON array of MongoDB pipeline stages</p>
+            <pre><code>[
+  {
+    "$match": {
+      "status": "completed",
+      "created_date": {"$gte": "2024-11-01", "$lte": "2024-11-30"}
+    }
+  },
+  {"$count": "total"}
+]</code></pre>
+        </div>
+
+        <h3>3. Query Executor Node</h3>
+        <div class="component">
+            <p><strong>Responsibilities:</strong></p>
+            <ul>
+                <li>Select connection method (MCP or Direct)</li>
+                <li>Execute MongoDB aggregation pipeline</li>
+                <li>Handle errors and retries</li>
+                <li>Return raw results</li>
+            </ul>
+            <p><strong>Connection Selection Logic:</strong></p>
+            <pre><code>if MONGODB_CONNECTION_TYPE == "mcp":
+    client = MCPClient()
+    results = client.query_via_http(pipeline)
+else:
+    client = DirectMongoClient()
+    results = client.query_direct(pipeline)</code></pre>
+        </div>
+
+        <h3>4. Output Parser Node</h3>
+        <div class="component">
+            <p><strong>Responsibilities:</strong></p>
+            <ul>
+                <li>Format query results</li>
+                <li>Clean and structure JSON</li>
+                <li>Add metadata (execution time, query used)</li>
+            </ul>
+            <p><strong>Output:</strong> Structured response</p>
+            <pre><code>{
+  "query_result": [...],
+  "query_generated": [...],
+  "execution_time_seconds": 0.234
+}</code></pre>
+        </div>
+
+        <h2>🔌 Connection Architecture</h2>
+
+        <h3>Direct Connection Flow</h3>
+        <div class="diagram">
+            <pre><code>
+Query Request
+    ↓
+MongoDB Router
+    ↓
+Direct Client (PyMongo)
+    ↓
+pymongo.MongoClient()
+    ↓
+Connection Pool (50 connections)
+    ↓
+MongoDB Database
+    ↓
+Execute Pipeline
+    ↓
+Return Results (Fast: ~10ms)
+            </code></pre>
+        </div>
+
+        <h3>MCP Protocol Flow</h3>
+        <div class="diagram">
+            <pre><code>
+Query Request
+    ↓
+MongoDB Router
+    ↓
+MCP Client
+    ↓
+Check Token Cache
+    ├─ Valid → Use cached token
+    └─ Invalid → Request new OAuth token
+        ↓
+    OAuth Token URL
+        ↓
+    Get Access Token (Bearer)
+    ↓
+HTTP POST to MCP Server
+    ├─ Headers: Authorization: Bearer {token}
+    └─ Body: {query: [...], collection: "..."}
+    ↓
+MCP Server (External)
+    ↓
+Validate Token
+    ↓
+MongoDB Connection
+    ↓
+Execute Pipeline
+    ↓
+Return Results (Slower: ~150ms due to HTTP)
+            </code></pre>
+        </div>
+
+        <h2>🧩 Core Components</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>File</th>
+                    <th>Purpose</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>FastAPI Server</strong></td>
+                    <td><code>mongodb_agent/api.py</code></td>
+                    <td>REST API endpoints, .env loading</td>
+                </tr>
+                <tr>
+                    <td><strong>MongoDB Agent</strong></td>
+                    <td><code>mongodb_agent/mongo_agent.py</code></td>
+                    <td>LangGraph workflow orchestration</td>
+                </tr>
+                <tr>
+                    <td><strong>Selector Node</strong></td>
+                    <td><code>mongodb_agent/utils/nodes.py</code></td>
+                    <td>Query generation using LLM</td>
+                </tr>
+                <tr>
+                    <td><strong>Query Executor</strong></td>
+                    <td><code>mongodb_agent/nodes/query_executor.py</code></td>
+                    <td>Execute queries via router</td>
+                </tr>
+                <tr>
+                    <td><strong>MongoDB Router</strong></td>
+                    <td><code>mongodb_agent/services/mongodb_router.py</code></td>
+                    <td>Connection type selection</td>
+                </tr>
+                <tr>
+                    <td><strong>Direct Client</strong></td>
+                    <td><code>mongodb_agent/services/direct_client.py</code></td>
+                    <td>PyMongo connection management</td>
+                </tr>
+                <tr>
+                    <td><strong>MCP Client</strong></td>
+                    <td><code>mongodb_agent/services/mcp_client.py</code></td>
+                    <td>HTTP client with OAuth</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🧠 LLM Integration</h2>
+
+        <div class="info-box">
+            <h3>Prompt Engineering</h3>
+            <p>The Selector Node constructs prompts with:</p>
+            <ul>
+                <li><strong>Context:</strong> Collection name, semantic model (schema)</li>
+                <li><strong>Task:</strong> Convert natural language to MongoDB aggregation</li>
+                <li><strong>Constraints:</strong> Valid JSON, array of pipeline stages</li>
+                <li><strong>Examples:</strong> Few-shot learning with sample queries</li>
+            </ul>
+        </div>
+
+        <h3>Example Prompt Structure</h3>
+        <pre><code>You are a MongoDB query expert. Convert this natural language question 
+into a MongoDB aggregation pipeline.
+
+Collection: orders
+Schema: {
+  "_id": "ObjectId",
+  "customer_id": "string",
+  "status": "string",
+  "total": "number",
+  "created_date": "date"
+}
+
+Question: "How many orders were completed last month?"
+
+Return ONLY a valid JSON array of pipeline stages. Example format:
+[
+  {"$match": {"status": "completed"}},
+  {"$count": "total"}
+]
+
+Your response:</code></pre>
+
+        <h2>📦 State Management</h2>
+
+        <p>LangGraph maintains state across nodes:</p>
+        <pre><code>class AgentState(TypedDict):
+    question: str              # User's natural language question
+    yaml_file_name: str        # Semantic model YAML file
+    semantic_model: dict       # Collection schema (optional)
+    query_generated: list      # Generated MongoDB pipeline
+    query_result: list         # Execution results
+    error: str                 # Error message (if any)
+    execution_time: float      # Query execution time</code></pre>
+
+        <h2>🔒 Security Architecture</h2>
+
+        <h3>Direct Connection Security</h3>
+        <ul>
+            <li><strong>Authentication:</strong> MongoDB native auth (SCRAM-SHA-256)</li>
+            <li><strong>Encryption:</strong> TLS/SSL via <code>mongodb+srv://</code></li>
+            <li><strong>Credentials:</strong> Stored in <code>.env</code> file (not committed)</li>
+            <li><strong>Connection Pool:</strong> Reuses authenticated connections</li>
+        </ul>
+
+        <h3>MCP Connection Security</h3>
+        <ul>
+            <li><strong>Authentication:</strong> OAuth 2.0 client credentials flow</li>
+            <li><strong>Token Management:</strong> Cached tokens with TTL</li>
+            <li><strong>HTTPS:</strong> Encrypted communication with MCP server</li>
+            <li><strong>Token Refresh:</strong> Automatic renewal on expiration</li>
+        </ul>
+
+        <h2>⚡ Performance Considerations</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Latency</th>
+                    <th>Optimization</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>LLM Query Generation</td>
+                    <td>1-3 seconds</td>
+                    <td>Streaming responses, prompt caching</td>
+                </tr>
+                <tr>
+                    <td>Direct MongoDB Query</td>
+                    <td>10-100ms</td>
+                    <td>Indexes, connection pooling</td>
+                </tr>
+                <tr>
+                    <td>MCP HTTP Round-trip</td>
+                    <td>150-300ms</td>
+                    <td>Token caching, keep-alive</td>
+                </tr>
+                <tr>
+                    <td>Total (Direct)</td>
+                    <td>1-4 seconds</td>
+                    <td>Mostly LLM processing time</td>
+                </tr>
+                <tr>
+                    <td>Total (MCP)</td>
+                    <td>1.5-4.5 seconds</td>
+                    <td>HTTP overhead added</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🔄 Error Handling</h2>
+
+        <div class="component">
+            <h3>Retry Logic</h3>
+            <ul>
+                <li><strong>LLM Errors:</strong> Retry up to 3 times with exponential backoff</li>
+                <li><strong>MongoDB Errors:</strong> Single retry with query validation</li>
+                <li><strong>MCP Errors:</strong> Fallback message with connection details</li>
+                <li><strong>Token Expiration:</strong> Automatic token refresh and retry</li>
+            </ul>
+        </div>
+
+        <div class="component">
+            <h3>Error Propagation</h3>
+            <pre><code>Try:
+    Generate Query (LLM)
+    ↓
+    Execute Query (MongoDB)
+    ↓
+    Format Results
+    ↓
+    Return Success Response
+Catch:
+    Log Error
+    ↓
+    Return Error Response with:
+    - Error type
+    - Error message
+    - Suggested action</code></pre>
+        </div>
+
+        <h2>📊 Monitoring & Logging</h2>
+
+        <p><strong>Log Levels:</strong></p>
+        <ul>
+            <li><code>DEBUG</code>: All operations, generated queries, LLM prompts</li>
+            <li><code>INFO</code>: Request/response, connection status, execution time</li>
+            <li><code>WARNING</code>: Retries, fallbacks, deprecation notices</li>
+            <li><code>ERROR</code>: Failures, exceptions, connection errors</li>
+        </ul>
+
+        <p><strong>Logged Information:</strong></p>
+        <ul>
+            <li>Request timestamp and user question</li>
+            <li>Generated MongoDB query</li>
+            <li>Query execution time</li>
+            <li>Result count and size</li>
+            <li>Errors and stack traces</li>
+        </ul>
+
+        <div class="next-steps">
+            <h3>📚 Related Documentation</h3>
+            <ul>
+                <li><a href="api-reference.html">📖 API Reference</a> - Complete endpoint docs</li>
+                <li><a href="usage.html">💡 Usage Examples</a> - See it in action</li>
+                <li><a href="troubleshooting.html">🔧 Troubleshooting</a> - Debug issues</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

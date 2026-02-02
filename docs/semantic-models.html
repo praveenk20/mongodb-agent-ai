@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semantic Models - MongoDB Agent AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 5px;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 5px 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .example {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .benefit {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .next-steps a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .next-steps a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div><a href="index.html">← Back to Documentation Hub</a></div>
+        <div>MongoDB Agent AI - Semantic Models</div>
+    </div>
+
+    <div class="container">
+        <h1>🗂️ Semantic Models</h1>
+        <p>Semantic models provide schema information and business context to improve query generation accuracy.</p>
+
+        <h2>What are Semantic Models?</h2>
+        <p>Semantic models are YAML files that describe your MongoDB collections in a way the AI can understand. They include:</p>
+        <ul>
+            <li><strong>Field names and types</strong> - What data exists in your collection</li>
+            <li><strong>Field descriptions</strong> - What each field means in business terms</li>
+            <li><strong>Relationships</strong> - How collections relate to each other</li>
+            <li><strong>Business rules</strong> - Constraints and validation rules</li>
+            <li><strong>Sample values</strong> - Examples of valid data</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>💡 Key Benefit:</strong> Semantic models help the LLM generate more accurate queries by understanding your data structure and business context.
+        </div>
+
+        <h2>Why Use Semantic Models?</h2>
+
+        <div class="benefit">
+            <h3>✅ Without Semantic Model</h3>
+            <p><strong>User:</strong> "Show me orders from last month"</p>
+            <p><strong>AI Generates:</strong></p>
+            <pre><code>[
+  {"$match": {"date": {"$gte": "2024-11-01"}}}  // Wrong field name!
+]</code></pre>
+            <p>Result: ❌ Query fails or returns wrong results</p>
+        </div>
+
+        <div class="benefit">
+            <h3>✅ With Semantic Model</h3>
+            <p><strong>User:</strong> "Show me orders from last month"</p>
+            <p><strong>AI Knows:</strong> Date field is called <code>created_date</code>, type is ISODate</p>
+            <p><strong>AI Generates:</strong></p>
+            <pre><code>[
+  {
+    "$match": {
+      "created_date": {
+        "$gte": ISODate("2024-11-01"),
+        "$lte": ISODate("2024-11-30")
+      }
+    }
+  }
+]</code></pre>
+            <p>Result: ✅ Correct query with proper field name and date format</p>
+        </div>
+
+        <h2>Semantic Model Structure</h2>
+
+        <h3>Basic Example</h3>
+        <div class="example">
+            <p><strong>File:</strong> <code>semantic_models/orders_semantic_model.yaml</code></p>
+            <pre><code>collection_name: orders
+description: Customer orders with line items and shipping details
+
+fields:
+  - name: _id
+    type: ObjectId
+    description: Unique order identifier
+    
+  - name: order_number
+    type: string
+    description: Human-readable order number (e.g., ORD-2024-001)
+    example: "ORD-2024-12345"
+    
+  - name: customer_id
+    type: string
+    description: Reference to customer collection
+    
+  - name: status
+    type: string
+    description: Order processing status
+    enum: [pending, processing, shipped, delivered, cancelled]
+    
+  - name: created_date
+    type: date
+    description: When the order was created (ISO format)
+    example: "2024-11-15T10:30:00Z"
+    
+  - name: total
+    type: number
+    description: Total order amount in USD
+    example: 125.50
+    
+  - name: items
+    type: array
+    description: Array of order line items
+    schema:
+      - name: product_id
+        type: string
+        description: Product identifier
+      - name: quantity
+        type: number
+        description: Quantity ordered
+      - name: price
+        type: number
+        description: Price per unit
+
+relationships:
+  - collection: customers
+    field: customer_id
+    type: many-to-one
+    description: Each order belongs to one customer
+
+indexes:
+  - fields: [status, created_date]
+    description: Index for filtering by status and date range
+    
+business_rules:
+  - "Orders cannot be modified after status is 'delivered'"
+  - "Total must equal sum of (items.quantity * items.price)"
+  - "Cancelled orders have total of 0"</code></pre>
+        </div>
+
+        <h2>Semantic Model Fields</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Section</th>
+                    <th>Purpose</th>
+                    <th>Example</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>collection_name</strong></td>
+                    <td>MongoDB collection name</td>
+                    <td><code>orders</code></td>
+                </tr>
+                <tr>
+                    <td><strong>description</strong></td>
+                    <td>What the collection stores</td>
+                    <td>"Customer purchase orders"</td>
+                </tr>
+                <tr>
+                    <td><strong>fields</strong></td>
+                    <td>Field definitions with types</td>
+                    <td>name, type, description, example</td>
+                </tr>
+                <tr>
+                    <td><strong>relationships</strong></td>
+                    <td>How collections link together</td>
+                    <td>many-to-one, one-to-many</td>
+                </tr>
+                <tr>
+                    <td><strong>indexes</strong></td>
+                    <td>Indexed fields for optimization</td>
+                    <td>[status, created_date]</td>
+                </tr>
+                <tr>
+                    <td><strong>business_rules</strong></td>
+                    <td>Validation and constraints</td>
+                    <td>"Total must be positive"</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Creating Semantic Models</h2>
+
+        <h3>Step 1: Analyze Your Collection</h3>
+        <pre><code># Connect to MongoDB and inspect structure
+db.orders.findOne()
+
+# Check field types
+db.orders.aggregate([
+  {$project: {fieldTypes: {$objectToArray: "$$ROOT"}}},
+  {$unwind: "$fieldTypes"},
+  {$group: {_id: "$fieldTypes.k", types: {$addToSet: {$type: "$fieldTypes.v"}}}}
+])</code></pre>
+
+        <h3>Step 2: Create YAML File</h3>
+        <pre><code># Create file in semantic_models directory
+nano semantic_models/your_collection_semantic_model.yaml</code></pre>
+
+        <h3>Step 3: Define Fields</h3>
+        <p>For each field in your collection:</p>
+        <ol>
+            <li><strong>name</strong> - Exact field name from MongoDB</li>
+            <li><strong>type</strong> - Data type (string, number, date, array, object)</li>
+            <li><strong>description</strong> - Business meaning of the field</li>
+            <li><strong>example</strong> - Sample value (helps AI understand format)</li>
+            <li><strong>enum</strong> - Valid values if field has limited options</li>
+        </ol>
+
+        <h3>Step 4: Add Context</h3>
+        <ul>
+            <li><strong>Relationships:</strong> How collections connect</li>
+            <li><strong>Indexes:</strong> What fields are indexed (helps with query optimization)</li>
+            <li><strong>Business Rules:</strong> Validation constraints and domain logic</li>
+        </ul>
+
+        <h3>Step 5: Define Business Rules</h3>
+        <p>Business rules help the AI understand your domain logic and generate more accurate queries. The business_rules section supports both simple string rules and structured rules:</p>
+        
+        <div class="example">
+            <h4>Simple Business Rules (List of Strings):</h4>
+            <pre><code>business_rules:
+  - "Orders cannot be modified after status is 'delivered'"
+  - "Total must equal sum of (items.quantity * items.price)"
+  - "Cancelled orders have total of 0"</code></pre>
+
+            <h4>Advanced Business Rules (Structured):</h4>
+            <pre><code>business_rules:
+  core_collections:
+    - name: orders
+      description: Main transaction collection
+    - name: customers
+      description: Customer master data
+  
+  join_patterns:
+    - collections: [orders, customers]
+      join_field: customer_id
+      description: Link orders to customer information
+  
+  field_priorities:
+    high:
+      - status
+      - created_date
+      - total
+    medium:
+      - customer_id
+      - items
+    low:
+      - notes
+      - internal_tracking_id
+  
+  query_type_rules:
+    aggregation:
+      - Use $group for count/sum queries
+      - Use $lookup for multi-collection queries
+    filtering:
+      - Always use indexed fields when available
+      - Use $match early in pipeline for performance
+  
+  domain_keywords:
+    status_terms:
+      - pending: Order awaiting processing
+      - completed: Order fulfilled and delivered
+      - cancelled: Order cancelled by customer
+    date_terms:
+      - created_date: When order was placed
+      - updated_date: Last modification time</code></pre>
+        </div>
+
+        <h2>Configuring Semantic Model Storage</h2>
+
+        <h3>Option 1: Local YAML Files (Default)</h3>
+        <pre><code># In .env file
+VECTOR_DB=local
+SEMANTIC_MODELS_PATH=./semantic_models
+
+# Directory structure
+semantic_models/
+├── orders_semantic_model.yaml
+            <li><strong>Business Rules:</strong> Constraints and validation logic</li>
+        </ul>
+
+        <h2>Using Semantic Models</h2>
+
+        <h3>Option 1: Auto-Load from Directory</h3>
+        <p>Place YAML files in <code>semantic_models/</code> directory. The agent will automatically load models matching the collection name.</p>
+        <pre><code>semantic_models/
+├── orders_semantic_model.yaml
+├── customers_semantic_model.yaml
+└── products_semantic_model.yaml</code></pre>
+
+        <h3>Option 2: Pass in API Request</h3>
+        <pre><code>POST /api/mongodb
+{
+  "question": "Show me pending orders",
+  "yaml_file_name": "orders_semantic_model.yaml",
+  "semantic_model": {
+    "yaml_file_name": "orders_semantic_model.yaml",
+    "fields": [
+      {"name": "status", "type": "string", "enum": ["pending", "completed"]},
+      {"name": "created_date", "type": "date"}
+    ]
+  }
+}</code></pre>
+
+        <h2>Advanced Examples</h2>
+
+        <h3>Nested Documents</h3>
+        <div class="example">
+            <pre><code>fields:
+  - name: shipping_address
+    type: object
+    description: Customer delivery address
+    schema:
+      - name: street
+        type: string
+      - name: city
+        type: string
+      - name: state
+        type: string
+      - name: zip
+        type: string
+      - name: country
+        type: string
+        default: "USA"</code></pre>
+        </div>
+
+        <h3>Enum Fields</h3>
+        <div class="example">
+            <pre><code>fields:
+  - name: priority
+    type: string
+    description: Order priority level
+    enum: [low, medium, high, urgent]
+    default: medium
+    
+  - name: payment_method
+    type: string
+    description: How customer paid
+    enum: [credit_card, paypal, bank_transfer, cash]</code></pre>
+        </div>
+
+        <h3>Date Ranges</h3>
+        <div class="example">
+            <pre><code>fields:
+  - name: created_date
+    type: date
+    description: Order creation timestamp
+    format: ISO8601
+    example: "2024-11-15T10:30:00Z"
+    
+  - name: delivery_date
+    type: date
+    description: Expected delivery date
+    format: ISO8601
+    constraints:
+      - "Must be after created_date"
+      - "Must be within 30 days of order"</code></pre>
+        </div>
+
+        <h2>Best Practices</h2>
+
+        <ol>
+            <li><strong>Use descriptive field names</strong> - <code>customer_email</code> better than <code>email</code></li>
+            <li><strong>Include examples</strong> - Helps AI understand data format</li>
+            <li><strong>Document enums</strong> - List all valid values for categorical fields</li>
+            <li><strong>Define relationships</strong> - Helps with join-like queries</li>
+            <li><strong>Add business context</strong> - Explain what fields mean in business terms</li>
+            <li><strong>Keep it updated</strong> - Update models when schema changes</li>
+            <li><strong>Use consistent naming</strong> - Follow MongoDB naming conventions</li>
+        </ol>
+
+        <h2>Validation</h2>
+
+        <h3>Test Your Semantic Model</h3>
+        <pre><code># Test query with semantic model
+curl -X POST http://localhost:8001/api/mongodb \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "Show me high priority orders from last week",
+    "yaml_file_name": "orders_semantic_model.yaml"
+  }'
+
+# Check logs to see generated query
+tail -f logs/mongodb_agent.log</code></pre>
+
+        <h2>Example Semantic Models</h2>
+
+        <p>The distribution includes sample semantic models:</p>
+        <ul>
+            <li><code>CBMDocuments_semantic_model.yaml</code> - Document tracking</li>
+            <li><code>ShippingDocuments_semantic_model.yaml</code> - Shipping records</li>
+            <li><code>SCReg_CollectionInfo.yaml</code> - Supply chain registry</li>
+        </ul>
+
+        <p>Use these as templates for your own collections.</p>
+
+        <h2>Impact on Query Generation</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>Without Model</th>
+                    <th>With Model</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Field name guessing</td>
+                    <td>Uses generic names (date, status)</td>
+                    <td>Uses exact field names (created_date, order_status)</td>
+                </tr>
+                <tr>
+                    <td>Date formatting</td>
+                    <td>May use wrong format</td>
+                    <td>Correct ISO format with timezone</td>
+                </tr>
+                <tr>
+                    <td>Enum values</td>
+                    <td>May use invalid values</td>
+                    <td>Only uses valid enum values</td>
+                </tr>
+                <tr>
+                    <td>Nested fields</td>
+                    <td>May miss nested structure</td>
+                    <td>Correctly accesses nested paths</td>
+                </tr>
+                <tr>
+                    <td>Relationships</td>
+                    <td>Cannot do joins</td>
+                    <td>Generates $lookup stages</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="next-steps">
+            <h3>📚 Next Steps</h3>
+            <ul>
+                <li><a href="usage.html">💡 Usage Examples</a> - See semantic models in action</li>
+                <li><a href="configuration.html">⚙️ Configuration</a> - Set up semantic model directory</li>
+                <li><a href="troubleshooting.html">🔧 Troubleshooting</a> - Debug model issues</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

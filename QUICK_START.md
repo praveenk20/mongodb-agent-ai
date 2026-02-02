@@ -86,7 +86,29 @@ AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4o-mini
 
 ---
 
-## Step 3: Create a Semantic Model
+## Step 3: Start the Server
+
+Start the server to access the web interface and API:
+
+```bash
+# Option 1: Quick start (from project root)
+./start_server.sh
+
+# Option 2: Direct Python
+python3 server.py
+
+# Option 3: Using scripts folder
+./scripts/start_server.sh
+```
+
+Then access:
+- **📖 HTML Docs:** http://127.0.0.1:8001/
+- **📚 API Docs:** http://127.0.0.1:8001/docs
+- **❤️ Health Check:** http://127.0.0.1:8001/health
+
+---
+
+## Step 4: Create a Semantic Model
 
 Create `semantic_models/my_collection.yaml`:
 

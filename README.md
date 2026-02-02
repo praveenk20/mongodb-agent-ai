@@ -1,8 +1,8 @@
-# 🚀 MongoDB Agent - Open Source Distribution
+# 🚀 MongoDB Natural Language Query AI Agent
 
 **Version:** 1.0.0  
 **License:** MIT  
-**Package:** mongodb-agent
+**Package:** mongodb-nl-query-ai-agent
 
 A powerful AI-powered agent for querying MongoDB databases using natural language. Built with LangGraph and supporting multiple LLM providers.
 
@@ -11,25 +11,47 @@ A powerful AI-powered agent for querying MongoDB databases using natural languag
 ## 📦 What's Inside?
 
 ```
-mongodb-agent-ai/
+mongodb-nl-query-ai-agent/
 ├── README.md                          # This file
 ├── LICENSE                            # MIT License
-├── QUICK_START.md                     # 5-minute setup guide  
-├── setup.sh                           # Automated setup script
-├── start_custom_server.sh             # Server start script
+├── QUICK_START.md                     # 5-minute setup guide
+├── pyproject.toml                     # Project configuration
+├── setup.py                           # Setup configuration
 ├── .env.template                      # Configuration template
-├── mongodb_agent-1.0.0-py3-none-any.whl  # Package wheel
-├── docs/                              # Documentation
-│   ├── USER_GUIDE.md                  # Complete user guide
-│   ├── API_REFERENCE.md               # API documentation
-│   ├── CONFIGURATION.md               # Configuration guide
-│   └── TROUBLESHOOTING.md             # Common issues
+├── src/                               # Source code (src layout)
+│   └── mongodb_agent/                 # Main package
+│       ├── __init__.py
+│       ├── agent.py                   # Core agent
+│       ├── api.py                     # REST API
+│       ├── cli.py                     # CLI interface
+│       ├── config.py                  # Configuration
+│       ├── graph.py                   # LangGraph workflow
+│       ├── state.py                   # State management
+│       ├── nodes/                     # Graph nodes
+│       ├── prompts/                   # LLM prompts
+│       ├── semantic_models/           # Model loaders
+│       ├── services/                  # External services
+│       └── utils/                     # Utilities
+├── tests/                             # Test suite
+│   ├── conftest.py                    # Test fixtures
+│   ├── test_agent.py                  # Agent tests
+│   ├── test_query_executor.py         # Query tests
+│   ├── test_router.py                 # Router tests
+│   └── ...                            # More tests
+├── docs/                              # Documentation (HTML)
+│   ├── index.html                     # Main docs
+│   ├── api-reference.html             # API reference
+│   └── images/                        # Documentation images
+├── scripts/                           # Utility scripts
+│   ├── setup.sh                       # Automated setup
+│   └── start_server.sh                # Unified server launcher
 ├── examples/                          # Example scripts
 │   ├── basic_query.py                 # Simple query
-│   ├── batch_queries.py               # Batch processing
-│   └── custom_integration.py          # Integration example
-└── semantic_models/                   # YAML semantic models
-    └── example_collection.yaml        # Example model
+│   └── test_connection.py             # Connection test
+├── semantic_models/                   # YAML semantic models
+│   └── example_collection.yaml        # Example model
+├── server.py                          # Main server (API + Docs)
+└── start_server.sh                    # Quick server launcher
 ```
 
 ---
@@ -38,7 +60,12 @@ mongodb-agent-ai/
 
 ### Step 1: Install
 ```bash
-pip install mongodb_agent-1.0.0-py3-none-any.whl
+# Install from source
+pip install -e .
+
+# Or build and install
+python -m build
+pip install dist/mongodb_nl_query_ai_agent-1.0.0-py3-none-any.whl
 ```
 
 ### Step 2: Configure
@@ -56,6 +83,38 @@ python3 -m mongodb_agent.cli server --port 8000
 # OR start REST API server (for HTTP/API access)
 python3 -m mongodb_agent.cli server --port 8000 --mode rest
 ```
+
+---
+
+## 📚 Documentation
+
+### **View HTML Documentation**
+For the complete interactive documentation with navigation:
+
+```bash
+# Option 1: Quick start (from project root)
+./start_server.sh
+
+# Option 2: Direct Python
+python3 server.py
+
+# Option 3: Using scripts folder
+./scripts/start_server.sh
+```
+
+Then open in your browser:
+- **📖 HTML Docs:** http://127.0.0.1:8001/
+- **📚 API Docs:** http://127.0.0.1:8001/docs
+- **❤️ Health Check:** http://127.0.0.1:8001/health
+
+### **Quick Documentation Links**
+- [Getting Started](docs/getting-started.html) - First-time setup
+- [Installation Guide](docs/installation.html) - Detailed installation
+- [Configuration](docs/configuration.html) - All configuration options
+- [Usage Examples](docs/usage.html) - Real-world examples
+- [API Reference](docs/api-reference.html) - Complete API documentation
+- [Architecture](docs/architecture.html) - System architecture
+- [Troubleshooting](docs/troubleshooting.html) - Common issues and solutions
 
 ---
 

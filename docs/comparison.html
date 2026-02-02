@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP vs Direct Comparison - MongoDB Agent AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5px 0;
+            font-size: 0.95em;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .recommendation {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 5px 0;
+        }
+
+        .pros, .cons {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .pros h3 {
+            color: #10b981;
+            margin-bottom: 5px;
+        }
+
+        .cons h3 {
+            color: #ef4444;
+            margin-bottom: 5px;
+        }
+
+        ul {
+            margin-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .decision-tree {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+
+        .decision-tree code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .next-steps a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .next-steps a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div><a href="index.html">← Back to Documentation Hub</a></div>
+        <div>MCP vs Direct Comparison</div>
+    </div>
+
+    <div class="container">
+        <h1>⚖️ MCP vs Direct Connection</h1>
+        <p>Choose the right connection type for your use case. Both modes support the same query capabilities but differ in setup complexity, latency, and integration options.</p>
+
+        <h2>📊 Feature Comparison</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>MCP Protocol</th>
+                    <th>Direct Connection</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Setup Complexity</strong></td>
+                    <td>Complex (requires MCP server)</td>
+                    <td>Simple (direct connection)</td>
+                </tr>
+                <tr>
+                    <td><strong>Setup Time</strong></td>
+                    <td>30+ minutes</td>
+                    <td>5 minutes</td>
+                </tr>
+                <tr>
+                    <td><strong>Dependencies</strong></td>
+                    <td>MCP server, OAuth provider</td>
+                    <td>MongoDB only</td>
+                </tr>
+                <tr>
+                    <td><strong>Best For</strong></td>
+                    <td>Claude Desktop, enterprise workflows</td>
+                    <td>Standalone apps, quick testing</td>
+                </tr>
+                <tr>
+                    <td><strong>Latency</strong></td>
+                    <td>~150ms (via HTTP)</td>
+                    <td>~10ms (direct)</td>
+                </tr>
+                <tr>
+                    <td><strong>Security</strong></td>
+                    <td>OAuth tokens, centralized auth</td>
+                    <td>MongoDB auth (SCRAM, X.509)</td>
+                </tr>
+                <tr>
+                    <td><strong>Scalability</strong></td>
+                    <td>Horizontal (multiple MCP servers)</td>
+                    <td>Connection pool (single instance)</td>
+                </tr>
+                <tr>
+                    <td><strong>Monitoring</strong></td>
+                    <td>Centralized at MCP server</td>
+                    <td>Application-level logging</td>
+                </tr>
+                <tr>
+                    <td><strong>Query Features</strong></td>
+                    <td>✅ Full support</td>
+                    <td>✅ Full support</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>🌐 MCP Protocol (Model Context Protocol)</h2>
+        
+        <div class="pros-cons">
+            <div class="pros">
+                <h3>✅ Advantages</h3>
+                <ul>
+                    <li>Standardized protocol for AI-database communication</li>
+                    <li>Claude Desktop integration out-of-the-box</li>
+                    <li>Centralized authentication with OAuth</li>
+                    <li>Audit trail and query logging</li>
+                    <li>Multiple clients can share MCP server</li>
+                    <li>Token caching reduces auth overhead</li>
+                </ul>
+            </div>
+            <div class="cons">
+                <h3>❌ Considerations</h3>
+                <ul>
+                    <li>Requires external MCP server setup</li>
+                    <li>Higher latency due to HTTP overhead</li>
+                    <li>More moving parts to maintain</li>
+                    <li>OAuth configuration complexity</li>
+                    <li>Network dependency (MCP server must be reachable)</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>🔌 Direct Connection (PyMongo)</h2>
+        
+        <div class="pros-cons">
+            <div class="pros">
+                <h3>✅ Advantages</h3>
+                <ul>
+                    <li>Simple setup - just connection string</li>
+                    <li>Low latency - direct database connection</li>
+                    <li>No external dependencies</li>
+                    <li>Connection pooling built-in</li>
+                    <li>Works offline (if MongoDB is local)</li>
+                    <li>Minimal configuration</li>
+                </ul>
+            </div>
+            <div class="cons">
+                <h3>❌ Considerations</h3>
+                <ul>
+                    <li>Each application instance needs credentials</li>
+                    <li>No Claude Desktop integration</li>
+                    <li>Application-level auth management</li>
+                    <li>No centralized query auditing</li>
+                    <li>Horizontal scaling requires load balancer</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="recommendation">
+            <h3>🎯 Recommendation</h3>
+            <p><strong>Start with Direct Connection</strong> for:</p>
+            <ul>
+                <li>Quick prototyping and testing</li>
+                <li>Standalone applications</li>
+                <li>Low-latency requirements</li>
+                <li>Simple deployment scenarios</li>
+            </ul>
+            <p style="margin-top: 15px;"><strong>Migrate to MCP Protocol</strong> when you need:</p>
+            <ul>
+                <li>Claude Desktop integration</li>
+                <li>Enterprise OAuth/SSO authentication</li>
+                <li>Centralized audit logging</li>
+                <li>Multi-client shared access</li>
+            </ul>
+        </div>
+
+        <h2>🔀 Decision Tree</h2>
+        <div class="decision-tree">
+            <pre>
+Do you need Claude Desktop integration?
+├─ Yes → Use <strong>MCP Protocol</strong>
+└─ No → Continue
+
+Do you need centralized OAuth/SSO?
+├─ Yes → Use <strong>MCP Protocol</strong>
+└─ No → Continue
+
+Do you need sub-50ms query latency?
+├─ Yes → Use <strong>Direct Connection</strong>
+└─ No → Continue
+
+Is quick setup more important than enterprise features?
+├─ Yes → Use <strong>Direct Connection</strong>
+└─ No → Use <strong>MCP Protocol</strong>
+            </pre>
+        </div>
+
+        <h2>🔄 Migration Path</h2>
+        <p>Good news: You can switch between connection types without changing your application code! The MongoDB Router abstracts the connection layer.</p>
+        
+        <p><strong>To switch from Direct to MCP:</strong></p>
+        <ol>
+            <li>Set up MCP server and OAuth provider</li>
+            <li>Update <code>.env</code> file: <code>MONGODB_CONNECTION_TYPE=mcp</code></li>
+            <li>Add MCP endpoint and OAuth credentials</li>
+            <li>Restart the agent</li>
+        </ol>
+
+        <p><strong>To switch from MCP to Direct:</strong></p>
+        <ol>
+            <li>Get MongoDB connection string</li>
+            <li>Update <code>.env</code> file: <code>MONGODB_CONNECTION_TYPE=direct</code></li>
+            <li>Add MongoDB URI and database name</li>
+            <li>Restart the agent</li>
+        </ol>
+
+        <div class="next-steps">
+            <h3>📚 Next Steps</h3>
+            <p>Ready to proceed?</p>
+            <ul>
+                <li><a href="installation.html">📦 Install MongoDB Agent</a> - Set up the agent</li>
+                <li><a href="configuration.html#direct-connection">🔌 Configure Direct Connection</a> - 5-minute setup</li>
+                <li><a href="configuration.html#mcp-connection">🌐 Configure MCP Protocol</a> - Enterprise setup</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

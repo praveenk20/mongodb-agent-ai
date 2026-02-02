@@ -13,20 +13,21 @@ with open(os.path.join(this_directory, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='mongodb-agent-ai',
+    name='mongodb-nl-query-ai-agent',
     version='1.0.0',
     author='MongoDB Agent Contributors',
     author_email='mongodb-agent@example.com',
     description='AI-powered agent for querying MongoDB databases using natural language',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/praveenk20/mongodb-agent-ai',
+    url='https://github.com/praveenk20/mongodb-nl-query-ai-agent',
     project_urls={
-        'Bug Tracker': 'https://github.com/praveenk20/mongodb-agent-ai/issues',
-        'Documentation': 'https://github.com/praveenk20/mongodb-agent-ai/tree/main/docs',
-        'Source Code': 'https://github.com/praveenk20/mongodb-agent-ai',
+        'Bug Tracker': 'https://github.com/praveenk20/mongodb-nl-query-ai-agent/issues',
+        'Documentation': 'https://github.com/praveenk20/mongodb-nl-query-ai-agent/tree/main/docs',
+        'Source Code': 'https://github.com/praveenk20/mongodb-nl-query-ai-agent',
     },
-    packages=find_packages(exclude=['tests', 'examples', 'docs']),
+    packages=find_packages(where='src', exclude=['tests', 'examples', 'docs']),
+    package_dir={'': 'src'},
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

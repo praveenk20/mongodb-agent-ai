@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Installation - MongoDB Agent AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f7fa;
+        }
+
+        .nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 5px;
+            font-size: 2.5em;
+        }
+
+        h2 {
+            color: #667eea;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h3 {
+            color: #555;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-bottom: 5px;
+        }
+
+        pre {
+            background: #2d3748;
+            color: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 5px 0;
+        }
+
+        code {
+            font-family: 'Courier New', monospace;
+        }
+
+        .info-box {
+            background: #e8f4f8;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .warning-box {
+            background: #fff4e6;
+            border-left: 4px solid #fb923c;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 5px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .option-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 5px 0;
+        }
+
+        .option-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .option-card h3 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .next-steps {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 5px;
+        }
+
+        .next-steps a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .next-steps a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav">
+        <div><a href="index.html">← Back to Documentation Hub</a></div>
+        <div>MongoDB Agent AI - Installation</div>
+    </div>
+
+    <div class="container">
+        <h1 id="installation">📦 Installation</h1>
+
+        <h2>Prerequisites</h2>
+        <ul>
+            <li><strong>Python:</strong> 3.10 or higher</li>
+            <li><strong>pip:</strong> Package installer for Python</li>
+            <li><strong>MongoDB:</strong> Access to MongoDB instance (optional for initial setup)</li>
+            <li><strong>LLM API Key:</strong> OpenAI, Anthropic, or Azure OpenAI</li>
+        </ul>
+
+        <div class="info-box">
+            <strong>💡 Tip:</strong> Check your Python version: <code>python3 --version</code>
+        </div>
+
+        <h2 id="setup-script">🚀 Option 1: Quick Setup (Recommended)</h2>
+        <p>Use the interactive setup script for guided installation:</p>
+
+        <pre><code># Navigate to distribution directory
+cd mongodb-agent-ai
+
+# Run setup script
+chmod +x setup.sh
+./setup.sh</code></pre>
+
+        <p>The setup script will:</p>
+        <ol>
+            <li>Check Python version (3.10+ required)</li>
+            <li>Create and activate virtual environment</li>
+            <li>Install the wheel package</li>
+            <li>Guide you through configuration</li>
+            <li>Verify the installation</li>
+        </ol>
+
+        <div class="success-box">
+            <strong>✅ Expected Output:</strong>
+            <pre><code>✅ MongoDB Agent installed successfully!
+✅ Configuration file created: .env
+✅ Server ready to start: python3 -m mongodb_agent.api</code></pre>
+        </div>
+
+        <h2>📋 Option 2: Manual Installation</h2>
+        
+        <h3>Step 1: Create Virtual Environment</h3>
+        <pre><code># Create virtual environment
+python3 -m venv venv
+
+# Activate virtual environment
+# macOS/Linux:
+source venv/bin/activate
+
+# Windows:
+venv\Scripts\activate</code></pre>
+
+        <h3>Step 2: Install Wheel Package</h3>
+        <pre><code># Navigate to distribution directory
+cd mongodb-agent-ai
+
+# Install the wheel
+pip3 install mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
+
+        <div class="info-box">
+            <strong>📦 Package Size:</strong> ~70KB wheel file contains all dependencies
+        </div>
+
+        <h3>Step 3: Verify Installation</h3>
+        <pre><code># Check installed packages
+pip3 list | grep mongodb-agent-ai
+
+# Expected output:
+# mongodb-agent-ai    1.0.0</code></pre>
+
+        <h2>🔄 Reinstalling or Upgrading</h2>
+        <p>If you need to reinstall or upgrade the package:</p>
+
+        <h3>Using Reinstall Script:</h3>
+        <pre><code>cd mongodb-agent-ai
+chmod +x reinstall.sh
+./reinstall.sh</code></pre>
+
+        <h3>Manual Reinstall:</h3>
+        <pre><code># Uninstall old version
+pip3 uninstall mongodb-agent-ai -y
+
+# Install new version
+pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
+
+        <h2>🧪 Installation Verification</h2>
+        
+        <h3>Test 1: Import Check</h3>
+        <pre><code>python3 -c "import mongodb_agent; print('✅ Import successful')"</code></pre>
+
+        <h3>Test 2: Module Check</h3>
+        <pre><code>python3 -m mongodb_agent.api --help</code></pre>
+
+        <h3>Test 3: Dependency Check</h3>
+        <pre><code>pip3 show mongodb-agent-ai</code></pre>
+
+        <div class="success-box">
+            <strong>✅ Expected Output:</strong>
+            <pre><code>Name: mongodb-agent-ai
+Version: 1.0.0
+Summary: Natural language interface for MongoDB using AI agents
+Author: Cisco Systems, Inc. and its affiliates
+Requires: pymongo, langgraph, langchain-core, python-dotenv, fastapi, uvicorn</code></pre>
+        </div>
+
+        <h2>🐍 Python Version Issues</h2>
+        
+        <div class="warning-box">
+            <strong>⚠️ Python 3.10+ Required</strong>
+            <p>If you get a version error:</p>
+            <pre><code># Check available Python versions
+python3.10 --version  # Try specific version
+python3.11 --version
+python3.12 --version
+
+# Use specific version
+python3.10 -m venv venv
+source venv/bin/activate
+pip3 install mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
+        </div>
+
+        <h2>🔧 Troubleshooting Installation</h2>
+
+        <h3>Issue: "No module named 'mongodb_agent'"</h3>
+        <p><strong>Solution:</strong></p>
+        <ol>
+            <li>Ensure virtual environment is activated: <code>source venv/bin/activate</code></li>
+            <li>Reinstall: <code>pip3 install --force-reinstall mongodb_agent_ai-1.0.0-py3-none-any.whl</code></li>
+            <li>Check Python path: <code>python3 -c "import sys; print(sys.path)"</code></li>
+        </ol>
+
+        <h3>Issue: "Permission denied"</h3>
+        <p><strong>Solution:</strong></p>
+        <pre><code># Don't use sudo with pip in virtual environment
+# Instead, ensure venv is activated:
+source venv/bin/activate
+pip3 install mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
+
+        <h3>Issue: Wheel file not found</h3>
+        <p><strong>Solution:</strong></p>
+        <pre><code># Verify wheel file exists
+ls -lh mongodb-agent-ai/*.whl
+
+# Expected: mongodb_agent_ai-1.0.0-py3-none-any.whl</code></pre>
+
+        <h2>📁 Installation Directory Structure</h2>
+        <pre><code>mongodb-agent-ai/
+├── mongodb_agent_ai-1.0.0-py3-none-any.whl  # Package
+├── setup.sh                                  # Setup script
+├── reinstall.sh                              # Reinstall script
+├── .env.template                             # Config template
+├── semantic_models/                          # YAML models
+└── examples/                                 # Example scripts</code></pre>
+
+        <h2>🌍 Environment Variables</h2>
+        <p>After installation, you'll need to configure environment variables. The setup script creates a <code>.env</code> file, or you can create it manually:</p>
+
+        <pre><code>cp .env.template .env
+nano .env  # Edit configuration</code></pre>
+
+        <div class="info-box">
+            <strong>📝 Note:</strong> Configuration details are covered in the <a href="configuration.html">Configuration Guide</a>
+        </div>
+
+        <h2>🚀 Starting the Server</h2>
+        <p>After installation and configuration, start the server using any of these methods:</p>
+
+        <pre><code># Option 1: Quick start (from project root)
+./start_server.sh
+
+# Option 2: Direct Python
+python3 server.py
+
+# Option 3: Using scripts folder
+./scripts/start_server.sh</code></pre>
+
+        <p>Then access:</p>
+        <ul>
+            <li><strong>📖 HTML Docs:</strong> <a href="http://127.0.0.1:8001/">http://127.0.0.1:8001/</a></li>
+            <li><strong>📚 API Docs:</strong> <a href="http://127.0.0.1:8001/docs">http://127.0.0.1:8001/docs</a></li>
+            <li><strong>❤️ Health Check:</strong> <a href="http://127.0.0.1:8001/health">http://127.0.0.1:8001/health</a></li>
+        </ul>
+
+        <div class="success-box">
+            <strong>✅ Server Started Successfully:</strong>
+            <pre><code>INFO:     Uvicorn running on http://0.0.0.0:8001
+INFO:     Application startup complete</code></pre>
+        </div>
+
+        <div class="next-steps">
+            <h3>📚 Next Steps</h3>
+            <p>Installation complete! Now configure your connection:</p>
+            <ul>
+                <li><a href="configuration.html">⚙️ Configure MongoDB Connection</a> - Set up Direct or MCP</li>
+                <li><a href="configuration.html#llm-providers">🤖 Configure LLM Provider</a> - OpenAI, Anthropic, or Azure</li>
+                <li><a href="usage.html">💡 Usage Examples</a> - Start querying!</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

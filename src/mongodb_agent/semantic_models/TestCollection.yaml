@@ -1,0 +1,18 @@
+collections:
+  TestCollection:
+    database: test_db
+    schema: test_schema
+    description: Test collection for unit tests
+    fields:
+      _id:
+        type: ObjectId
+        description: Document ID
+      name:
+        type: String
+        description: Name field
+      count:
+        type: Number
+        description: Count field
+      created_at:
+        type: Date
+        description: Creation timestamp
